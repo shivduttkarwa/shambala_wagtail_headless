@@ -59,13 +59,14 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   const brickWallBuiltRef = useRef(false);
 
   useEffect(() => {
-    // Force scroll to top
-    if (window.history.scrollRestoration) {
-      window.history.scrollRestoration = 'manual';
+    // Only scroll to top on initial page load, not on mobile scroll events
+    const isInitialLoad = window.performance.navigation.type === 0;
+    if (isInitialLoad) {
+      if (window.history.scrollRestoration) {
+        window.history.scrollRestoration = 'manual';
+      }
+      window.scrollTo(0, 0);
     }
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
 
     if (!h1Ref.current || !textRef.current) return;
 
@@ -264,38 +265,46 @@ const HeroSection: React.FC<HeroSectionProps> = ({
         gsap.killTweensOf(container);
       },
       onEnterBack: () => {
-        // Immediately kill all ongoing animations
-        gsap.killTweensOf(container);
-        const spans = h1Element.querySelectorAll('.d-flex span');
-        gsap.killTweensOf(spans);
-        
-        // Immediately hide everything
-        container.textContent = '';
-        gsap.set(container, { y: 30, opacity: 0, clearProps: 'all' });
-        gsap.set(spans, { y: '100%', clearProps: 'transform' });
-        
-        // Reset all state
-        brickWallBuiltRef.current = false;
-        currentIndexRef.current = 0;
-        
-        // Start animation after a brief delay to ensure everything is reset
-        setTimeout(() => {
-          showLine();
-        }, 50);
+        // Less aggressive reset to prevent scroll conflicts
+        const isMobile = window.innerWidth <= 768;
+        if (!isMobile) {
+          // Desktop: Full reset
+          gsap.killTweensOf(container);
+          const spans = h1Element.querySelectorAll('.d-flex span');
+          gsap.killTweensOf(spans);
+          
+          container.textContent = '';
+          gsap.set(container, { y: 30, opacity: 0, clearProps: 'all' });
+          gsap.set(spans, { y: '100%', clearProps: 'transform' });
+          
+          brickWallBuiltRef.current = false;
+          currentIndexRef.current = 0;
+          
+          setTimeout(() => {
+            showLine();
+          }, 50);
+        } else {
+          // Mobile: Minimal intervention, just ensure text is visible
+          if (!container.textContent || container.textContent === '') {
+            container.textContent = typedTexts[0];
+            gsap.set(container, { opacity: 1 });
+          }
+        }
       },
       onLeaveBack: () => {
-        // Kill all animations immediately
-        gsap.killTweensOf(container);
-        const spans = h1Element.querySelectorAll('.d-flex span');
-        gsap.killTweensOf(spans);
-        
-        // Hide everything
-        container.textContent = '';
-        gsap.set(container, { y: 30, opacity: 0, clearProps: 'all' });
-        gsap.set(spans, { y: '100%', clearProps: 'transform' });
-        
-        // Clear bricks
-        clearOldBricks();
+        // Less aggressive on mobile
+        const isMobile = window.innerWidth <= 768;
+        if (!isMobile) {
+          gsap.killTweensOf(container);
+          const spans = h1Element.querySelectorAll('.d-flex span');
+          gsap.killTweensOf(spans);
+          
+          container.textContent = '';
+          gsap.set(container, { y: 30, opacity: 0, clearProps: 'all' });
+          gsap.set(spans, { y: '100%', clearProps: 'transform' });
+          
+          clearOldBricks();
+        }
       }
     });
 

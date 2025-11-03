@@ -325,7 +325,8 @@
 @media (max-width: 768px) {
   .media-overlay-stack .text-container {
     padding: 1rem 1.25rem;
-    max-width: 95%;
+    width: 300px;
+    max-width: 90vw;
     background: linear-gradient(
       to right,
       rgba(0, 0, 0, 0.9) 0%,
@@ -333,6 +334,7 @@
       rgba(0, 0, 0, 0.2) 100%
     );
     border-radius: 6px;
+    box-sizing: border-box;
   }
 
   .media-overlay-stack .text-container h2 {

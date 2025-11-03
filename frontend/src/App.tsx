@@ -61,6 +61,11 @@ function App() {
       title: 'Hardscaping Solutions',
       subtitle: 'Patios, walkways, and retaining walls',
     },
+    {
+      image: `${publicUrl}images/hero.jpg`,
+      title: 'Landscape Lighting',
+      subtitle: 'Beautiful outdoor lighting for evening ambiance',
+    },
   ];
 
   const maintenanceSlides = [
@@ -78,6 +83,11 @@ function App() {
       image: `${publicUrl}images/6.jpg`,
       title: 'Seasonal Maintenance',
       subtitle: 'Year-round care for your outdoor spaces',
+    },
+    {
+      image: `${publicUrl}images/l4.jpg`,
+      title: 'Pest & Disease Control',
+      subtitle: 'Comprehensive protection for healthy plants',
     },
   ];
  

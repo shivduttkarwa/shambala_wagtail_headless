@@ -130,7 +130,7 @@ const MediaComparator: React.FC<MediaComparatorProps> = ({
         trigger: wrapper,
         pin: container,
         pinSpacing: true,
-        scrub: isMobile ? 1 : 0.25, // Less aggressive scrub on mobile
+        scrub: isMobile ? 0.5 : 0.25, // Smoother scrub on mobile
         anticipatePin: isMobile ? 0 : 1, // Disable anticipatePin on mobile
         start: 'center center',
         end: () => `+=${getWrapperWidth()}`,
