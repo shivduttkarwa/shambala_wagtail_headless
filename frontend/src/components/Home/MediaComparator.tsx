@@ -1,9 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import './MediaComparator.css';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
+import { gsap, ScrollTrigger } from '../../lib/gsap';
 
 interface Slide {
   image: string;
@@ -127,6 +124,7 @@ const MediaComparator: React.FC<MediaComparatorProps> = ({
         anticipatePin: 1,
         start: 'center center',
         end: () => `+=${getWrapperWidth()}`,
+        invalidateOnRefresh: true,
         onUpdate: (self) => {
           updateSlidePositions(self.progress);
         },

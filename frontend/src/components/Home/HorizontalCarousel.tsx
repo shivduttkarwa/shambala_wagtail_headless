@@ -1,13 +1,10 @@
 import React, { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { gsap, ScrollTrigger } from '../../lib/gsap';
 import Swiper from 'swiper';
 import { Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import './HorizontalCarousel.css';
-
-gsap.registerPlugin(ScrollTrigger);
 
 interface SlideData {
   id: number;
@@ -83,8 +80,11 @@ const HorizontalCarousel: React.FC<HorizontalCarouselProps> = ({
     const swiperEl = section.querySelector('.swiper-container') as HTMLElement;
     if (!swiperEl) return;
 
+    let swiper: Swiper | null = null;
+    let tl: gsap.core.Timeline | null = null;
+
     // Initialize Swiper
-    const swiper = new Swiper(swiperEl, {
+    swiper = new Swiper(swiperEl, {
       modules: [Pagination],
       slidesPerView: 'auto',
       spaceBetween: 24,
@@ -96,52 +96,60 @@ const HorizontalCarousel: React.FC<HorizontalCarouselProps> = ({
       },
     });
 
-    // Get the horizontal scrolling distance to center last slide
-    const getScrollAmount = () => {
-      const slides = swiper.slides;
-      if (!slides || slides.length === 0) return 0;
-      
-      let totalWidth = 0;
-      slides.forEach((slide: Element) => {
-        totalWidth += (slide as HTMLElement).offsetWidth;
+    // Wait a moment for Swiper to fully initialize
+    setTimeout(() => {
+      if (!swiper) return;
+
+      // Get the horizontal scrolling distance to center last slide
+      const getScrollAmount = () => {
+        const slides = swiper!.slides;
+        if (!slides || slides.length === 0) return 0;
+        
+        let totalWidth = 0;
+        slides.forEach((slide: Element) => {
+          totalWidth += (slide as HTMLElement).offsetWidth;
+        });
+        totalWidth += 24 * (slides.length - 1); // Add spacing
+        
+        // Get last slide width
+        const lastSlide = slides[slides.length - 1] as HTMLElement;
+        const lastSlideWidth = lastSlide.offsetWidth;
+        const viewportWidth = window.innerWidth;
+        
+        // To center last slide: we need to move wrapper so that
+        // last slide's center aligns with viewport center
+        const movement = totalWidth - viewportWidth / 2 - lastSlideWidth / 2;
+        
+        return -movement;
+      };
+
+      // Create GSAP timeline for horizontal scroll
+      tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          pin: true,
+          start: 'top 5%',
+          scrub: 1,
+          end: () => `+=${Math.abs(getScrollAmount())}`,
+          invalidateOnRefresh: true,
+        }
       });
-      totalWidth += 24 * (slides.length - 1); // Add spacing
-      
-      // Get last slide width
-      const lastSlide = slides[slides.length - 1] as HTMLElement;
-      const lastSlideWidth = lastSlide.offsetWidth;
-      const viewportWidth = window.innerWidth;
-      
-      // To center last slide: we need to move wrapper so that
-      // last slide's center aligns with viewport center
-      // Movement needed = totalWidth - viewportWidth - (viewportWidth/2 - lastSlideWidth/2)
-      const movement = totalWidth - viewportWidth / 2 - lastSlideWidth / 2;
-      
-      return -movement;
-    };
 
-    // Create GSAP timeline for horizontal scroll
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        pin: true,
-        start: 'top 5%', // Start when section title is visible (5% from top)
-        scrub: 1,
-        end: () => `+=${Math.abs(getScrollAmount())}`,
-        invalidateOnRefresh: true,
-      }
-    });
-
-    // Animate the swiper wrapper horizontally
-    tl.to(swiperEl.querySelector('.swiper-wrapper'), {
-      x: getScrollAmount,
-      ease: 'none',
-    });
+      // Animate the swiper wrapper horizontally
+      tl.to(swiperEl.querySelector('.swiper-wrapper'), {
+        x: getScrollAmount,
+        ease: 'none',
+      });
+    }, 100);
 
     // Cleanup
     return () => {
-      tl.scrollTrigger?.kill();
-      swiper.destroy();
+      if (tl) {
+        tl.scrollTrigger?.kill();
+      }
+      if (swiper) {
+        swiper.destroy();
+      }
     };
   }, [slides]);
 

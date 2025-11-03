@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { gsap, ScrollTrigger } from '../../lib/gsap';
 import SliderModal from './SliderModal';
 import { LazyImage } from '@/components/LazyImage';
-gsap.registerPlugin(ScrollTrigger);
 
 interface ServiceBox {
   id: number;
@@ -375,7 +373,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({
     const cycleInterval = setInterval(cycleText, 3000); // Change every 3 seconds
 
     return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+      // Only kill ScrollTriggers that belong to this component
+      ScrollTrigger.getAll().filter(trigger => 
+        trigger.trigger === h1Element
+      ).forEach(trigger => trigger.kill());
       clearOldBricks();
       clearInterval(cycleInterval);
       clearTimeout(fallbackTimer);

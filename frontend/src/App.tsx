@@ -1,6 +1,8 @@
 import './styles/App.css';
 import { Header, Footer, Preloader } from './components/Layout';
 import { useHome } from './hooks/useHome';
+import { useEffect } from 'react';
+import { ScrollTrigger } from './lib/gsap';
 
 import {
   HeroSection,
@@ -18,6 +20,26 @@ import { defaultHeroData } from './data/defaultData';
 function App() {
   // Load Strapi page data (Hero mapped to your component props shape)
   const { loading, heroProps } = useHome();
+
+  // Global ScrollTrigger coordination
+  useEffect(() => {
+    // Refresh ScrollTrigger when content loads
+    if (!loading) {
+      setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 300);
+    }
+  }, [loading]);
+
+  // Handle window resize for all scroll components
+  useEffect(() => {
+    const handleResize = () => {
+      ScrollTrigger.refresh();
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Vite base path for files in /public
   const publicUrl = import.meta.env.BASE_URL || '/';
