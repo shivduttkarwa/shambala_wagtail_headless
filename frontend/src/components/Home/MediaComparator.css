@@ -281,11 +281,14 @@
     overflow: hidden;
   }
 
-  /* Smoother transitions on mobile */
-  .swiper-wrapper,
+  /* Minimal transitions on mobile for smoothness */
+  .swiper-wrapper {
+    transition: none; /* Remove CSS transitions, let GSAP handle it */
+  }
+  
   .slide-inner,
   .media-overlay-stack {
-    transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+    transition: none; /* Remove CSS transitions, let GSAP handle it */
   }
 }
 

@@ -68,12 +68,11 @@ const MediaComparator: React.FC<MediaComparatorProps> = ({
       const maxTranslate = -(wrapperWidth * (numSlides - 1));
       const currentTranslate = maxTranslate * progress;
 
-      // Apply translation with mobile optimization
-      const isMobile = window.innerWidth <= 768;
+      // Apply translation
       gsap.set(swiperWrapper, {
         x: currentTranslate,
         force3D: true, // Force GPU acceleration
-        willChange: isMobile ? 'transform' : 'auto'
+        willChange: 'transform'
       });
 
       // Update in-progress state for comparator line
@@ -130,29 +129,62 @@ const MediaComparator: React.FC<MediaComparatorProps> = ({
         trigger: wrapper,
         pin: container,
         pinSpacing: true,
-        scrub: isMobile ? 0.5 : 0.25, // Smoother scrub on mobile
+        scrub: isMobile ? 0.1 : 0.25, // Much lighter scrub on mobile
         anticipatePin: isMobile ? 0 : 1, // Disable anticipatePin on mobile
         start: 'center center',
         end: () => `+=${getWrapperWidth()}`,
         invalidateOnRefresh: true,
         fastScrollEnd: isMobile ? true : false, // Prevent flicker on mobile
         onUpdate: (self) => {
-          updateSlidePositions(self.progress);
+          if (isMobile) {
+            // Throttle updates on mobile to prevent stagger
+            requestAnimationFrame(() => {
+              updateSlidePositions(self.progress);
+            });
+          } else {
+            updateSlidePositions(self.progress);
+          }
         },
         onRefresh: () => {
           updateSlidePositions(progressRef.current.value);
         },
+        onEnter: (self) => {
+          // Ensure smooth entry on mobile, especially for RTL
+          if (isMobile) {
+            progressRef.current.value = 0;
+            // Force immediate positioning without animation
+            const initialProgress = direction === 'rtl' ? 0 : 0;
+            gsap.set(swiperWrapper, { x: 0 }); // Reset to start position
+            updateSlidePositions(initialProgress);
+          }
+        },
         onToggle: (self) => {
           // Prevent flicker when entering/leaving on mobile
           if (isMobile && !self.isActive) {
-            updateSlidePositions(0);
+            // Smooth transition instead of immediate reset
+            gsap.to(progressRef.current, {
+              value: 0,
+              duration: 0.2,
+              ease: "power2.out",
+              onUpdate: () => updateSlidePositions(progressRef.current.value)
+            });
           }
         }
       }
     });
 
-    // Initialize at starting position
-    updateSlidePositions(0);
+    
+    // Initialize at starting position with slight delay for mobile
+    if (isMobile) {
+      // For mobile, ensure we start cleanly
+      gsap.set(swiperWrapper, { x: 0 }); // Force reset position immediately
+      setTimeout(() => {
+        progressRef.current.value = 0;
+        updateSlidePositions(0);
+      }, 100);
+    } else {
+      updateSlidePositions(0);
+    }
 
     return () => {
       animation.kill();

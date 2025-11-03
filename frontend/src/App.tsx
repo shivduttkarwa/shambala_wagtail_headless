@@ -44,50 +44,51 @@ function App() {
   // Vite base path for files in /public
   const publicUrl = import.meta.env.BASE_URL || '/';
 
-  // Demo slides (these use /public/images/*)
-  const landscapingSlides = [
+  // Featured Residential Projects
+  const residentialProjects = [
     {
       image: `${publicUrl}images/l3.jpg`,
-      title: 'Garden Design & Planning',
-      subtitle: 'Transform your outdoor space with expert design',
+      title: 'Modern Family Villa',
+      subtitle: 'Contemporary 4-bedroom home with open-plan living and premium finishes',
     },
     {
       image: `${publicUrl}images/l1.jpg`,
-      title: 'Professional Lawn Care',
-      subtitle: 'Maintain a lush, healthy lawn year-round',
+      title: 'Luxury Estate Home',
+      subtitle: 'Expansive 5-bedroom residence with elegant design and landscaped gardens',
     },
     {
       image: `${publicUrl}images/l4.jpg`,
-      title: 'Hardscaping Solutions',
-      subtitle: 'Patios, walkways, and retaining walls',
+      title: 'Sustainable Smart Home',
+      subtitle: 'Eco-friendly 3-bedroom home with solar panels and smart technology',
     },
     {
       image: `${publicUrl}images/hero.jpg`,
-      title: 'Landscape Lighting',
-      subtitle: 'Beautiful outdoor lighting for evening ambiance',
+      title: 'Heritage Style Manor',
+      subtitle: 'Classic 6-bedroom heritage home with traditional charm and modern amenities',
     },
   ];
 
-  const maintenanceSlides = [
+  // Commercial & Community Projects
+  const commercialProjects = [
     {
       image: `${publicUrl}images/hero.jpg`,
-      title: 'Tree & Plant Care',
-      subtitle: 'Expert pruning and plant health services',
+      title: 'Corporate Office Complex',
+      subtitle: 'Modern 3-story office building with sustainable design and state-of-the-art facilities',
     },
     {
       image: `${publicUrl}images/5.jpg`,
-      title: 'Irrigation Systems',
-      subtitle: 'Efficient watering solutions for your landscape',
+      title: 'Retail Shopping Center',
+      subtitle: 'Contemporary shopping complex with mixed-use spaces and community-focused design',
     },
     {
       image: `${publicUrl}images/6.jpg`,
-      title: 'Seasonal Maintenance',
-      subtitle: 'Year-round care for your outdoor spaces',
+      title: 'Boutique Hotel Resort',
+      subtitle: 'Luxury 4-star boutique hotel with spa facilities and stunning architectural elements',
     },
     {
       image: `${publicUrl}images/l4.jpg`,
-      title: 'Pest & Disease Control',
-      subtitle: 'Comprehensive protection for healthy plants',
+      title: 'Educational Campus',
+      subtitle: 'State-of-the-art educational facility with innovative learning spaces and green technology',
     },
   ];
  
@@ -113,18 +114,18 @@ function App() {
   serviceBoxes={heroProps?.serviceBoxes ?? defaultHeroData.serviceBoxes}
 />
         <MediaComparator
-          id="landscaping_services_comparator"
-          title="Our Landscaping Services - Scroll to Explore"
-          slides={landscapingSlides}
+          id="residential_projects_comparator"
+          title="Featured Residential Projects - Scroll to Explore"
+          slides={residentialProjects}
           direction="rtl"
           showComparatorLine={true}
           showOverlayAnimation={true}
         />
 
         <MediaComparator
-          id="maintenance_services_comparator"
-          title="Maintenance & Care Services"
-          slides={maintenanceSlides}
+          id="commercial_projects_comparator"
+          title="Commercial & Community Projects"
+          slides={commercialProjects}
           direction="ltr"
           showComparatorLine={true}
           showOverlayAnimation={true}
