@@ -136,7 +136,6 @@ function App() {
 
         {/* Examples / layout blocks */}
         <StudioSection />
-        <StudioSection />
 
         <QualityHomes />
         <DreamHomeJourney />
