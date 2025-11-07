@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GKC Architecture & Design — Responsive v5</title>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+
+<style>
+  :root{
+    --hero-v-align: end;          /* start | center | end */
+    --hero-top-pad:  min(14vh, 180px);
+    --hero-bottom-pad: clamp(24px, 4vh, 64px);
+    --hero-left-pad: clamp(16px, 4vw, 64px);
+    --hero-right-pad: clamp(16px, 4vw, 64px);
+    
+    --header-bg: transparent;
+    --accent: #0a66ff;
+    --accent-2: #002ee6;
+    --ink: #222;
+    --ink-60:#666;
+    --paper:#fff;
+
+    --header-safe: 72px;
+
+    --color-accent: var(--accent);
+    --color-accent-2: var(--accent-2);
+    --color-bg: #ffffff;
+    --color: #111111;
+  }
+  
+  @media (max-width: 768px) {
+    :root {
+      --hero-v-align: start;
+      --hero-top-pad: min(25vh, 220px);
+    }
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;
+    background:#000; color:#fff; overflow-x:hidden;
+  }
+
+  header{
+    position:fixed; inset:0 0 auto 0; z-index:1000;
+    padding: 1.2rem var(--hero-left-pad);
+    display:flex; align-items:center; justify-content:space-between;
+    transition: transform .3s ease, background .3s ease;
+    background: var(--header-bg);
+  }
+  .logo{font-size:2rem;font-weight:700;letter-spacing:-.02em}
+  .logo-subtitle{font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;margin-top:-4px}
+  .menu-btn{
+    color:#fff; font-size:.85rem; letter-spacing:.2em; text-transform:uppercase;
+    background:none;border:0;cursor:pointer;display:flex;align-items:center;gap:.8rem;
+  }
+  .menu-icon{width:26px;height:18px;display:flex;flex-direction:column;justify-content:space-between}
+  .menu-icon span{height:2px;background:#fff;width:100%}
+
+  /* ===== HERO ===== */
+  .hero-section{
+    position: relative; width:100%; height:100svh; overflow:hidden; isolation:isolate;
+  }
+  .video-background{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transform:translateZ(0)}
+  .hero-overlay{position:absolute; inset:0; background:rgba(0,0,0,.35)}
+
+  .hero-content{
+    position:absolute; inset:0; z-index:10; display:flex; flex-direction:column;
+    padding-left: var(--hero-left-pad); padding-right: var(--hero-right-pad);
+    padding-top: calc(var(--hero-top-pad) + var(--header-safe)); padding-bottom: var(--hero-bottom-pad);
+  }
+
+  .hero-text{flex:1 1 auto; display:grid; align-content: var(--hero-v-align); min-height:0}
+  .hero-text h1{
+    font-size: clamp(3rem, 8vw, 8rem); font-weight:300; line-height:1.06; letter-spacing:-.03em;
+    text-wrap:balance;
+    color:#f2f4f8;                          /* brighter for visibility */
+    text-shadow: 0 1px 18px rgba(0,0,0,.35);/* subtle lift on busy video */
+  }
+
+  .hero-bottom{
+    margin-top:auto; display:flex; align-items:flex-end; justify-content:space-between;
+    gap: clamp(16px, 3vw, 48px); width:100%;
+  }
+
+  /* ===== CTA (sliding text + arrow) ===== */
+  .discover-box{background:#fff;color:#000; max-width:320px; width:max(260px, 22vw); padding:1.6rem 2rem; border-radius:0}
+  
+  @media (max-width: 768px) {
+    .hero-text { align-content: start; }
+    .hero-text h1 { font-size: clamp(2.5rem, 6vw, 3.5rem); }
+    .discover-box { max-width: 260px; width: 90%; padding: 1.2rem 1.6rem; }
+    .hero-bottom { flex-direction: column; align-items: center; gap: 2rem; }
+  }
+  
+  .cta-link{
+    display:inline-flex; align-items:flex-end; gap:.6rem;
+    color:#333; text-decoration:none; font-size:1.05rem; font-weight:600;
+    padding-bottom:.5rem; border-bottom:2px solid var(--accent);
+    transition: gap .35s cubic-bezier(.76,0,.24,1), color .3s ease;
+    position:relative; overflow:hidden;
+  }
+  .cta-text{display:inline-block; position:relative; line-height:1.2; overflow:hidden;}
+  .cta-text > span{display:block; transform:translateY(0); transition: transform .45s cubic-bezier(.76,0,.24,1);}
+  .cta-text::after{content: attr(data-text); position:absolute; left:0; top:100%; transition: transform .45s cubic-bezier(.76,0,.24,1);}
+  .cta-link .arrow{transition: transform .35s ease}
+  .cta-link:hover{ gap:1rem }
+  .cta-link:hover .cta-text > span{ transform:translateY(-100%) }
+  .cta-link:hover .cta-text::after{ transform:translateY(-100%) }
+
+  /* ===== SLIDER (70% of previous width) ===== */
+  .slider-container{
+    position:relative;
+    width:min(520px, 36vw);      /* reduced width */
+    margin-left:auto; background:#fff; color:#000; border-radius:0; overflow:hidden;
+    height: 250px;
+  }
+  .swiper{width:100%}
+  .slide-wrapper{cursor:pointer; position:relative}
+  .slide-image{width:100%; height:min(240px, 18vh); object-fit:cover; display:block}
+  .slide-progress-bar{position:absolute; inset:auto 0 0 0; height:3px; background:#e5e5e5; z-index:10}
+  .slide-progress-fill{height:100%; background:var(--accent); width:0%}
+  .slide-content{padding:1.6rem 1.8rem 2.1rem; background:#fff; transition: transform .25s ease}
+  .slide-wrapper:hover .slide-content{transform: translateY(-2px)}
+  .slide-title{font-weight:400; color:#222; font-size:1.1rem; line-height:1.35; margin:0 0 1rem}
+
+  /* "Read more" — arrow + gap hover */
+  .slide-link{
+    display:inline-flex; align-items:center; gap:.5rem;
+    color:#333; text-decoration:none; font-size:.95rem; font-weight:500;
+    padding-bottom:.5rem; border-bottom:2px solid var(--accent);
+    transition: gap .3s ease, color .3s ease;
+  }
+  .slide-link:hover{gap:1rem}
+
+  /* ===== RIGHT-SIDE NAV COLUMN (two curtains, half-half height) ===== */
+  .c-carousel-news_controls{
+    position:absolute; right:0; top:0; bottom:0; width:64px;
+    display:flex; flex-direction:column; align-items:stretch; justify-content:stretch;
+    border-left:1px solid #e9e9e9; background:#fff; z-index:20;
+  }
+  .c-carousel-news_controls > * + *{border-top:1px solid #e9e9e9;}
+
+  .u-screen-reader-text{
+    position:absolute !important; height:1px; width:1px; overflow:hidden;
+    clip:rect(1px,1px,1px,1px); white-space:nowrap; border:0; padding:0; margin:-1px;
+  }
+
+  .c-button.-icon{
+    position:relative; display:block; width:100%;
+    flex:1 1 50%; min-height:0;
+    background:transparent; border:0; cursor:pointer; overflow:hidden; color:#111;
+  }
+  .c-button_inner{position:relative; display:grid; place-items:center; width:100%; height:100%; z-index:2;}
+  .c-button_icon svg{width:18px; height:18px; display:block}
+
+  /* Curtains with bigger gap already from previous step */
+  .c-button.-icon::before{
+    content:""; position:absolute; inset:0; background: var(--color-accent);
+    transform: translateX(100%); transition: transform .36s cubic-bezier(.76,0,.24,1) 0s; z-index:1;
+  }
+  .c-button.-icon::after{
+    content:""; position:absolute; inset:0; background: var(--color-accent-2);
+    transform: translateX(100%); transition: transform .36s cubic-bezier(.76,0,.24,1) .28s; z-index:1;
+  }
+  .c-button.-icon:hover::before{ transform: translateX(0); transition-delay: 0s; }
+  .c-button.-icon:hover::after{  transform: translateX(0); transition-delay: .28s; }
+  .c-button.-icon:hover .c-button_icon{ color:#fff }
+
+  /* Pagination bottom-right inside slider */
+  .slider-container .swiper-pagination{
+    position:absolute !important;
+    right:72px; bottom:14px;
+    width:auto !important; color:#9aa0a6; font-weight:600; font-size:.9rem;
+  }
+
+  /* Sections */
+  section{padding: 6rem var(--hero-left-pad); background:#fff; color:#000}
+  .section-minimal{min-height:50vh; display:flex; align-items:center; justify-content:center}
+  .section-content{max-width:1200px; margin:0 auto}
+  .section-content h2{font-size: clamp(2rem, 4.5vw, 3.5rem); font-weight:300; letter-spacing:-.02em; margin:0 0 1.4rem}
+  .section-content p{font-size:1.15rem; color:var(--ink-60); line-height:1.72; max-width:860px}
+  .section-alt{background:#f8f8f8}
+
+  /* Page progress */
+  .page-progress-bar-container{position:fixed; inset:0 0 auto 0; height:3px; background:rgba(255,255,255,.2); z-index:999}
+  .page-progress-bar{height:100%; width:0%; background:var(--accent)}
+
+  /* Fullscreen slider (unchanged) */
+  .fullscreen-slider{position:fixed; inset:0; background:#000; z-index:2000; opacity:0; pointer-events:none; transition: opacity .5s ease}
+  .fullscreen-slider.active{opacity:1; pointer-events:auto}
+  .fullscreen-swiper{width:100%; height:100%}
+  .fullscreen-slide{display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden}
+  .fullscreen-slide-image{width:100%; height:100%; object-fit:cover; transform:scale(1.06)}
+  .fullscreen-slide.swiper-slide-active .fullscreen-slide-image{animation:zoomIn 1.1s ease forwards}
+  @keyframes zoomIn{to{transform:scale(1)}}
+  .fullscreen-overlay{position:absolute; inset:0; background:linear-gradient(to bottom, rgba(0,0,0,.2), rgba(0,0,0,.65)); z-index:5}
+  .fullscreen-slide-content{
+    position:absolute; left:var(--hero-left-pad); right:var(--hero-right-pad); bottom:8rem; z-index:10;
+    opacity:0; transform:translateY(26px);
+  }
+  .fullscreen-slide.swiper-slide-active .fullscreen-slide-content{animation: slideUp .7s ease .35s forwards}
+  @keyframes slideUp{to{opacity:1; transform:translateY(0)}}
+  .fullscreen-slide-content h2{font-weight:300; letter-spacing:-.02em; font-size: clamp(2rem, 5vw, 4rem); margin:0 0 1rem}
+  .fullscreen-slide-content .slide-link{color:#fff; border-bottom-color:#fff}
+
+  .close-fullscreen{
+    position:fixed; top:1.2rem; right:var(--hero-right-pad);
+    width:48px; height:48px; display:grid; place-items:center;
+    color:#fff; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.3);
+    backdrop-filter: blur(10px); font-size:1.8rem; cursor:pointer; z-index:3000; transition:all .25s ease;
+  }
+  .close-fullscreen:hover{background:rgba(255,255,255,.2); transform:rotate(90deg)}
+  .fullscreen-pagination{
+    position:fixed !important; bottom:2rem !important; left:var(--hero-left-pad) !important;
+    color:#fff !important; font-weight:600 !important;
+  }
+  .fullscreen-nav{
+    position:fixed; bottom:2rem; right:var(--hero-right-pad); display:flex; gap:.8rem; z-index:3000;
+  }
+  .fullscreen-nav button{
+    width:48px;height:48px; display:grid; place-items:center;
+    color:#fff; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.3);
+    backdrop-filter: blur(10px); font-size:1.3rem; cursor:pointer; transition:all .25s ease;
+  }
+  .fullscreen-nav button:hover{background:rgba(255,255,255,.2)}
+
+  /* ====== Responsive tweaks ====== */
+  @media (max-width: 1024px){
+    .slider-container{width:100%; margin-left:0}
+    .slide-image{height: 30vh;}                 /* slightly reduced on tablets */
+    .slider-container .swiper-pagination{right:68px;}
+  }
+  @media (max-width: 768px){
+    header{padding: .9rem var(--hero-left-pad)}
+    .hero-content{
+      padding-left: var(--hero-left-pad);
+      padding-right: var(--hero-left-pad);
+      padding-top: calc(7vh + var(--header-safe));
+      padding-bottom: calc(var(--hero-bottom-pad) + 20px);
+    }
+    .hero-text h1{
+      font-size: clamp(4.2rem, 8.5vw, 3.6rem);   /* smaller heading on mobile */
+    }
+    .hero-bottom{flex-direction:column; align-items:stretch; gap:16px}
+    .discover-box{max-width:100%; width:75%}
+    .slider-container{width:100%}                /* full width stack on mobile */
+    .slide-image{height: 12vh;}                  /* further less height on mobile */
+    section{padding: 4rem var(--hero-left-pad)}
+    .c-carousel-news_controls{width:56px}
+    .slider-container .swiper-pagination{right:60px; font-size:.85rem}
+    .slide-content {
+    padding: 0.6rem 0.8rem 1.1rem;
+    background: #fff;
+    transition: transform .25s ease;
+}
+    .slider-container{
+    position:relative;
+    
+    margin-left:auto; background:#fff; color:#000; border-radius:0; overflow:hidden;
+    height: 210px;
+  }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div>GKC</div>
+    <div class="logo-subtitle">ARCHITECTURE<br/>& DESIGN</div>
+  </div>
+  <button class="menu-btn">
+    MENU
+    <div class="menu-icon"><span></span><span></span><span></span></div>
+  </button>
+</header>
+
+<div class="page-progress-bar-container"><div id="pageProgressBar" class="page-progress-bar"></div></div>
+
+<section class="hero-section">
+  <video class="video-background" autoplay muted loop playsinline>
+    <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4"/>
+  </video>
+  <div class="hero-overlay"></div>
+
+  <div class="hero-content">
+    <div class="hero-text">
+      <h1>Aligning vision<br/>and action</h1>
+    </div>
+
+    <div class="hero-bottom">
+      <!-- CTA with sliding text -->
+      <div class="discover-box" id="discoverBox">
+        <a href="#" class="cta-link" id="ctaLink">
+          <span class="cta-text" data-text="Discover the world of GKC">
+            <span>Discover the world of GKC</span>
+          </span>
+          <span class="arrow">→</span>
+        </a>
+      </div>
+
+      <!-- Slider -->
+      <div class="slider-container">
+        <!-- Right-side controls -->
+        <div class="c-carousel-news_controls">
+          <button class="c-button -icon c-carousel_news_button -next" id="rs-next" aria-label="Next">
+            <span class="c-button_inner">
+              <span class="u-screen-reader-text">Next</span>
+              <span class="c-button_icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M8 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </span>
+          </button>
+          <button class="c-button -icon c-carousel_news_button -prev" id="rs-prev" aria-label="Previous">
+            <span class="c-button_inner">
+              <span class="u-screen-reader-text">Previous</span>
+              <span class="c-button_icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M16 4L8 12l8 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </span>
+          </button>
+        </div>
+
+        <div class="swiper heroSwiper">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide">
+              <div class="slide-wrapper" data-slide-index="0">
+                <img class="slide-image" src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&h=800&fit=crop" alt="Architecture 1"/>
+                <div class="slide-progress-bar"><div class="slide-progress-fill"></div></div>
+                <div class="slide-content">
+                  <h3 class="slide-title">Appointment of three new Associates</h3>
+                  <a href="#" class="slide-link" onclick="event.stopPropagation();">
+                    Read more <span class="arrow">→</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div class="slide-wrapper" data-slide-index="1">
+                <img class="slide-image" src="https://images.unsplash.com/photo-1577495508048-b635879837f1?w=1200&h=800&fit=crop" alt="Architecture 2"/>
+                <div class="slide-progress-bar"><div class="slide-progress-fill"></div></div>
+                <div class="slide-content">
+                  <h3 class="slide-title">Innovative Design Solutions for Modern Spaces</h3>
+                  <a href="#" class="slide-link" onclick="event.stopPropagation();">
+                    Read more <span class="arrow">→</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div class="slide-wrapper" data-slide-index="2">
+                <img class="slide-image" src="https://images.unsplash.com/photo-1511818966892-d7d671e672a2?w=1200&h=800&fit=crop" alt="Architecture 3"/>
+                <div class="slide-progress-bar"><div class="slide-progress-fill"></div></div>
+                <div class="slide-content">
+                  <h3 class="slide-title">Sustainable Architecture: Building for Tomorrow</h3>
+                  <a href="#" class="slide-link" onclick="event.stopPropagation();">
+                    Read more <span class="arrow">→</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Fullscreen slider -->
+<div class="fullscreen-slider" id="fullscreenSlider">
+  <button class="close-fullscreen" id="closeFullscreen">×</button>
+  <div class="swiper fullscreen-swiper">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide fullscreen-slide">
+        <img class="fullscreen-slide-image" src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1920&h=1080&fit=crop" alt="Architecture 1"/>
+        <div class="fullscreen-overlay"></div>
+        <div class="fullscreen-slide-content">
+          <h2>Appointment of three new Associates</h2>
+          <a class="slide-link" href="#"><span>Read more</span> <span class="arrow">→</span></a>
+        </div>
+      </div>
+      <div class="swiper-slide fullscreen-slide">
+        <img class="fullscreen-slide-image" src="https://images.unsplash.com/photo-1577495508048-b635879837f1?w=1920&h=1080&fit=crop" alt="Architecture 2"/>
+        <div class="fullscreen-overlay"></div>
+        <div class="fullscreen-slide-content">
+          <h2>Innovative Design Solutions for Modern Spaces</h2>
+          <a class="slide-link" href="#"><span>Read more</span> <span class="arrow">→</span></a>
+        </div>
+      </div>
+      <div class="swiper-slide fullscreen-slide">
+        <img class="fullscreen-slide-image" src="https://images.unsplash.com/photo-1511818966892-d7d671e672a2?w=1920&h=1080&fit=crop" alt="Architecture 3"/>
+        <div class="fullscreen-overlay"></div>
+        <div class="fullscreen-slide-content">
+          <h2>Sustainable Architecture: Building for Tomorrow</h2>
+          <a class="slide-link" href="#"><span>Read more</span> <span class="arrow">→</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="fullscreen-pagination"></div>
+  <div class="fullscreen-nav">
+    <button class="fullscreen-prev">‹</button>
+    <button class="fullscreen-next">›</button>
+  </div>
+</div>
+
+<section class="section-minimal">
+  <div class="section-content">
+    <h2>Design Excellence</h2>
+    <p>We create transformative spaces that blend innovation with functionality. Our approach combines architectural expertise with a deep understanding of human needs, resulting in designs that inspire and endure.</p>
+  </div>
+</section>
+
+<section class="section-minimal section-alt">
+  <div class="section-content">
+    <h2>Our Commitment</h2>
+    <p>With decades of experience in architecture and design, we are dedicated to delivering projects that exceed expectations. From concept to completion, we ensure every detail reflects our commitment to quality and innovation.</p>
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  // header safe space
+  const header = document.querySelector('header');
+  const setHeaderSafe = () => {
+    document.documentElement.style.setProperty('--header-safe', header.offsetHeight + 'px');
+  };
+  setHeaderSafe(); window.addEventListener('resize', setHeaderSafe);
+
+  // HERO SWIPER
+  const heroSwiper = new Swiper('.heroSwiper', {
+    loop: true,
+    speed: 900,
+    effect: 'creative',
+    creativeEffect: {
+      prev: { translate: ['-20%', 0, -1], opacity: 0 },
+      next: { translate: ['100%', 0, 0], opacity: 0 },
+    },
+    pagination: { el: '.slider-container .swiper-pagination', type: 'fraction' },
+    navigation: {
+      nextEl: '#rs-next',
+      prevEl: '#rs-prev',
+    },
+    autoplay: { delay: 5000, disableOnInteraction: false },
+    on: {
+      autoplayTimeLeft(swiper, time, progress){
+        const activeSlide = swiper.slides[swiper.activeIndex];
+        const bar = activeSlide?.querySelector('.slide-progress-fill');
+        if(bar) bar.style.width = `${(1 - progress) * 100}%`;
+      },
+      slideChange(){
+        document.querySelectorAll('.slide-progress-fill').forEach(b=> b.style.width='0%');
+      }
+    }
+  });
+
+  // FULLSCREEN SWIPER
+  let fullscreenSwiper;
+  const fullscreenSlider = document.getElementById('fullscreenSlider');
+  const closeBtn = document.getElementById('closeFullscreen');
+
+  function initFullscreenSwiper(){
+    fullscreenSwiper = new Swiper('.fullscreen-swiper', {
+      loop: true,
+      speed: 1400,
+      effect: 'creative',
+      creativeEffect: {
+        prev: { translate: ['-100%', 0, 0], opacity: 0 },
+        next: { translate: ['100%', 0, 0], opacity: 0 },
+      },
+      pagination: { el: '.fullscreen-pagination', type: 'fraction' },
+      navigation: { nextEl: '.fullscreen-next', prevEl: '.fullscreen-prev' },
+      mousewheel: { enabled: true, forceToAxis: true, sensitivity: 1, releaseOnEdges: true, thresholdDelta: 50 },
+      keyboard: { enabled: true },
+      on: {
+        slideChange(){
+          gsap.fromTo('.fullscreen-slide-content',
+            {opacity:0, y:26},
+            {opacity:1, y:0, duration:.7, delay:.35, ease:'power3.out'}
+          );
+        }
+      }
+    });
+  }
+
+  function openFullscreen(slideIndex=0){
+    fullscreenSlider.classList.add('active');
+    document.body.style.overflow='hidden';
+    if(!fullscreenSwiper) initFullscreenSwiper();
+    fullscreenSwiper.slideToLoop(slideIndex, 0);
+  }
+
+  // open correct fullscreen slide (based on data-slide-index)
+  document.querySelectorAll('.slide-wrapper').forEach(wrapper=>{
+    wrapper.addEventListener('click', (e)=>{
+      if(e.target.closest('a')) return;
+      const idx = parseInt(wrapper.dataset.slideIndex, 10) || 0;
+      openFullscreen(idx);
+    });
+  });
+
+  // CTA opens fullscreen first slide
+  document.getElementById('ctaLink').addEventListener('click', (e)=>{ e.preventDefault(); openFullscreen(0); });
+  document.getElementById('discoverBox').addEventListener('click', ()=> openFullscreen(0));
+
+  // close fullscreen
+  function closeFullscreen(){ fullscreenSlider.classList.remove('active'); document.body.style.overflow=''; }
+  closeBtn.addEventListener('click', closeFullscreen);
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && fullscreenSlider.classList.contains('active')) closeFullscreen(); });
+
+  // page progress
+  window.addEventListener('scroll', ()=>{
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    document.getElementById('pageProgressBar').style.width = scrolled + '%';
+  });
+
+  // header hide/reveal on scroll
+  let lastY = 0, ticking = false;
+  window.addEventListener('scroll', ()=>{
+    if(ticking) return;
+    requestAnimationFrame(()=>{
+      const y = window.pageYOffset || document.documentElement.scrollTop;
+      if(y <= 0){ gsap.to(header, {y:0, duration:.25}); }
+      else if(y > lastY && y > 120){ gsap.to(header, {y:-header.offsetHeight, duration:.25}); }
+      else if(y < lastY){ gsap.to(header, {y:0, duration:.25}); }
+      lastY = y; ticking = false;
+    });
+    ticking = true;
+  });
+
+  // entrance anims
+  gsap.from('.hero-text h1',{duration:1.05, y:96, opacity:0, ease:'power3.out', delay:.2});
+  gsap.from('.discover-box',{duration:.9, x:-60, opacity:0, ease:'power3.out', delay:.45});
+  gsap.from('.slider-container',{duration:.9, x:60, opacity:0, ease:'power3.out', delay:.55});
+
+  // section reveals
+  gsap.utils.toArray('.section-minimal').forEach(section=>{
+    gsap.from(section.querySelector('.section-content'),{
+      scrollTrigger:{trigger:section,start:'top 75%', end:'top 25%', toggleActions:'play none none reverse'},
+      duration:1.0, y:80, opacity:0, ease:'power3.out'
+    });
+  });
+
+  // subtle parallax on video
+  gsap.to('.video-background',{
+    scrollTrigger:{trigger:'.hero-section',start:'top top', end:'bottom top', scrub:1},
+    scale:1.12, ease:'none'
+  });
+</script>
+</body>
+</html>

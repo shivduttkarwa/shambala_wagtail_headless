@@ -104,17 +104,8 @@ function App() {
 
         
       
-        {/* New lightweight hero section */}
+        {/* New hero section */}
         <NewHeroSection
-          title="Creating Beautiful Outdoor Spaces"
-          subtitle="Transform your property with expert landscaping and design that brings your vision to life."
-          ctaText="Get Free Consultation"
-          ctaLink="#contact"
-          heroImages={[
-            `${publicUrl}images/hero.jpg`,
-            `${publicUrl}images/l1.jpg`,
-            `${publicUrl}images/l2.jpg`
-          ]}
         />
         <MediaComparator
           id="residential_projects_comparator"

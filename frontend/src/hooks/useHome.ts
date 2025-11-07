@@ -70,6 +70,47 @@ export const useHome = (): UseHomeReturn => {
       } catch (err) {
         console.error('Failed to load home page data:', err);
         setError(err instanceof Error ? err.message : 'Failed to load home page data');
+        
+        // Provide fallback data when API is not available
+        const fallbackProps: HeroProps = {
+          mainTitle: ['Transform your', 'outdoor dreams'],
+          typedTexts: ['eco-friendly gardens', 'beautiful landscapes', 'relaxing spaces', 'sustainable outdoors'],
+          description: 'Create stunning outdoor spaces that reflect your unique style and enhance your property\'s value.',
+          ctaText: 'Get a Free Site Visit',
+          ctaLink: '#contact',
+          backgroundImage: `${import.meta.env.BASE_URL}images/hero.jpg`,
+          serviceBoxes: [
+            {
+              id: 1,
+              index: 0,
+              title: 'Garden Design & Installation',
+              description: 'Custom garden designs that transform your outdoor space into a beautiful sanctuary.',
+              image: `${import.meta.env.BASE_URL}images/1.jpg`,
+              imageSmall: `${import.meta.env.BASE_URL}images/1.jpg`,
+              fullImage: `${import.meta.env.BASE_URL}images/l1.jpg`,
+            },
+            {
+              id: 2,
+              index: 1,
+              title: 'Outdoor Living Spaces',
+              description: 'Create the perfect outdoor entertainment area for your family and friends.',
+              image: `${import.meta.env.BASE_URL}images/2.jpg`,
+              imageSmall: `${import.meta.env.BASE_URL}images/2.jpg`,
+              fullImage: `${import.meta.env.BASE_URL}images/l2.jpg`,
+            },
+            {
+              id: 3,
+              index: 2,
+              title: 'Sustainable Eco-Friendly Gardens',
+              description: 'Environmentally conscious landscaping solutions for a greener future.',
+              image: `${import.meta.env.BASE_URL}images/3.jpg`,
+              imageSmall: `${import.meta.env.BASE_URL}images/3.jpg`,
+              fullImage: `${import.meta.env.BASE_URL}images/l3.jpg`,
+            },
+          ],
+        };
+        
+        setHeroProps(fallbackProps);
       } finally {
         setLoading(false);
       }
