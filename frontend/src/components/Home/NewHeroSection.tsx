@@ -15,58 +15,7 @@ gsap.registerPlugin(ScrollTrigger);
 const NewHeroSection: React.FC = () => {
   const heroSectionRef = useRef<HTMLElement | null>(null);
   let heroSwiper: Swiper | null = null;
-  let fullscreenSwiper: Swiper | null = null;
-
-  const openFullscreen = (slideIndex = 0) => {
-    const fullscreenSlider = document.getElementById('fullscreenSlider');
-    if (!fullscreenSlider) return;
-    
-    fullscreenSlider.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    
-    if (!fullscreenSwiper) {
-      fullscreenSwiper = new Swiper('.fullscreen-swiper', {
-        modules: [Navigation, Pagination, EffectCreative, Mousewheel, Keyboard],
-        loop: true,
-        speed: 1400,
-        effect: 'creative',
-        creativeEffect: {
-          prev: { translate: ['-100%', 0, 0], opacity: 0 },
-          next: { translate: ['100%', 0, 0], opacity: 0 },
-        },
-        pagination: { el: '.fullscreen-pagination', type: 'fraction' },
-        navigation: { 
-          nextEl: '.fullscreen-next', 
-          prevEl: '.fullscreen-prev' 
-        },
-        mousewheel: { 
-          enabled: true, 
-          forceToAxis: true, 
-          sensitivity: 1, 
-          releaseOnEdges: true, 
-          thresholdDelta: 50 
-        },
-        keyboard: { enabled: true },
-        on: {
-          slideChange() {
-            gsap.fromTo('.fullscreen-slide-content',
-              { opacity: 0, y: 26 },
-              { opacity: 1, y: 0, duration: .7, delay: .35, ease: 'power3.out' }
-            );
-          }
-        }
-      });
-    }
-    fullscreenSwiper.slideToLoop(slideIndex, 0);
-  };
-
-  const closeFullscreen = () => {
-    const fullscreenSlider = document.getElementById('fullscreenSlider');
-    if (!fullscreenSlider) return;
-    
-    fullscreenSlider.classList.remove('active');
-    document.body.style.overflow = '';
-  };
+  // Fullscreen functionality removed for simplicity
 
   useEffect(() => {
     // Initialize Swiper modules
@@ -101,37 +50,7 @@ const NewHeroSection: React.FC = () => {
       }
     });
 
-    // Event listeners for fullscreen functionality
-    document.querySelectorAll('.slide-wrapper').forEach((wrapper: Element) => {
-      wrapper.addEventListener('click', (e) => {
-        if ((e.target as Element).closest('a')) return;
-        const idx = parseInt((wrapper as HTMLElement).dataset.slideIndex || '0', 10) || 0;
-        openFullscreen(idx);
-      });
-    });
-
-    // CTA opens fullscreen first slide
-    const ctaLink = document.getElementById('ctaLink');
-    const discoverBox = document.getElementById('discoverBox');
-    const ctaHandler = (e: Event) => { e.preventDefault(); openFullscreen(0); };
-    
-    ctaLink?.addEventListener('click', ctaHandler);
-    discoverBox?.addEventListener('click', ctaHandler);
-
-    // Close fullscreen - get reference for cleanup
-    let closeBtn: HTMLElement | null = null;
-    setTimeout(() => {
-      closeBtn = document.getElementById('closeFullscreen');
-      closeBtn?.addEventListener('click', closeFullscreen);
-    }, 100);
-    
-    const escHandler = (e: KeyboardEvent) => {
-      const fullscreenSlider = document.getElementById('fullscreenSlider');
-      if (e.key === 'Escape' && fullscreenSlider?.classList.contains('active')) {
-        closeFullscreen();
-      }
-    };
-    document.addEventListener('keydown', escHandler);
+    // Video plays automatically on desktop, static background on mobile
 
     // Entrance animations - with immediate fallback to visible state
     const tl = gsap.timeline();
@@ -216,16 +135,6 @@ const NewHeroSection: React.FC = () => {
     return () => {
       // Cleanup
       heroSwiper?.destroy(true, true);
-      fullscreenSwiper?.destroy(true, true);
-      
-      ctaLink?.removeEventListener('click', ctaHandler);
-      discoverBox?.removeEventListener('click', ctaHandler);
-      
-      // Get fresh reference for cleanup
-      const closeBtnForCleanup = document.getElementById('closeFullscreen');
-      closeBtnForCleanup?.removeEventListener('click', closeFullscreen);
-      
-      document.removeEventListener('keydown', escHandler);
       
       // Kill all GSAP animations and timelines
       tl?.kill();
@@ -239,8 +148,17 @@ const NewHeroSection: React.FC = () => {
   return (
     <>
       <section ref={heroSectionRef} className="hero-section">
-        <video className="video-background" autoPlay muted loop playsInline>
-          <source src={`${import.meta.env.BASE_URL}images/3769953-hd_1920_1080_25fps.mp4`} type="video/mp4" />
+        <video 
+          className="video-background" 
+          autoPlay 
+          muted 
+          loop 
+          playsInline 
+          controls={false}
+          disablePictureInPicture
+          preload="auto"
+        >
+          <source src={`${import.meta.env.BASE_URL}images/hero2.mp4`} type="video/mp4" />
         </video>
         <div className="hero-overlay"></div>
 
@@ -250,8 +168,8 @@ const NewHeroSection: React.FC = () => {
           </div>
 
           <div className="hero-bottom">
-            <div className="discover-box" id="discoverBox">
-              <a href="#contact" className="cta-link" id="ctaLink">
+            <div className="discover-box">
+              <a href="#contact" className="cta-link">
                 <span className="cta-text" data-text="Get a Free Site Visit">
                   <span>Get a Free Site Visit</span>
                 </span>
@@ -286,36 +204,36 @@ const NewHeroSection: React.FC = () => {
               <div className="swiper heroSwiper">
                 <div className="swiper-wrapper">
                   <div className="swiper-slide">
-                    <div className="slide-wrapper" data-slide-index="0">
+                    <div className="slide-wrapper">
                       <img className="slide-image" src={`${import.meta.env.BASE_URL}images/1.jpg`} alt="Garden Design" loading="lazy"/>
                       <div className="slide-progress-bar"><div className="slide-progress-fill"></div></div>
                       <div className="slide-content">
                         <h3 className="slide-title">Garden Design & Installation</h3>
-                        <a href="#" className="slide-link" onClick={(e) => e.stopPropagation()}>
+                        <a href="#" className="slide-link">
                           Read more <span className="arrow">→</span>
                         </a>
                       </div>
                     </div>
                   </div>
                   <div className="swiper-slide">
-                    <div className="slide-wrapper" data-slide-index="1">
+                    <div className="slide-wrapper">
                       <img className="slide-image" src={`${import.meta.env.BASE_URL}images/2.jpg`} alt="Landscaping Project" loading="lazy"/>
                       <div className="slide-progress-bar"><div className="slide-progress-fill"></div></div>
                       <div className="slide-content">
                         <h3 className="slide-title">Outdoor Living Spaces</h3>
-                        <a href="#" className="slide-link" onClick={(e) => e.stopPropagation()}>
+                        <a href="#" className="slide-link">
                           Read more <span className="arrow">→</span>
                         </a>
                       </div>
                     </div>
                   </div>
                   <div className="swiper-slide">
-                    <div className="slide-wrapper" data-slide-index="2">
+                    <div className="slide-wrapper">
                       <img className="slide-image" src={`${import.meta.env.BASE_URL}images/3.jpg`} alt="Sustainable Landscaping" loading="lazy"/>
                       <div className="slide-progress-bar"><div className="slide-progress-fill"></div></div>
                       <div className="slide-content">
                         <h3 className="slide-title">Sustainable Eco-Friendly Gardens</h3>
-                        <a href="#" className="slide-link" onClick={(e) => e.stopPropagation()}>
+                        <a href="#" className="slide-link">
                           Read more <span className="arrow">→</span>
                         </a>
                       </div>
@@ -329,43 +247,6 @@ const NewHeroSection: React.FC = () => {
         </div>
       </section>
 
-      {/* Fullscreen overlay */}
-      <div className="fullscreen-slider" id="fullscreenSlider">
-        <button className="close-fullscreen" id="closeFullscreen">×</button>
-        <div className="swiper fullscreen-swiper">
-          <div className="swiper-wrapper">
-            <div className="swiper-slide fullscreen-slide">
-              <img className="fullscreen-slide-image" src={`${import.meta.env.BASE_URL}images/l1.jpg`} alt="Garden Design" loading="eager"/>
-              <div className="fullscreen-overlay"></div>
-              <div className="fullscreen-slide-content">
-                <h2>Garden Design & Installation</h2>
-                <a className="slide-link" href="#"><span>Read more</span> <span className="arrow">→</span></a>
-              </div>
-            </div>
-            <div className="swiper-slide fullscreen-slide">
-              <img className="fullscreen-slide-image" src={`${import.meta.env.BASE_URL}images/l2.jpg`} alt="Landscaping Project" loading="eager"/>
-              <div className="fullscreen-overlay"></div>
-              <div className="fullscreen-slide-content">
-                <h2>Outdoor Living Spaces</h2>
-                <a className="slide-link" href="#"><span>Read more</span> <span className="arrow">→</span></a>
-              </div>
-            </div>
-            <div className="swiper-slide fullscreen-slide">
-              <img className="fullscreen-slide-image" src={`${import.meta.env.BASE_URL}images/l3.jpg`} alt="Sustainable Landscaping" loading="eager"/>
-              <div className="fullscreen-overlay"></div>
-              <div className="fullscreen-slide-content">
-                <h2>Sustainable Eco-Friendly Gardens</h2>
-                <a className="slide-link" href="#"><span>Read more</span> <span className="arrow">→</span></a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="fullscreen-pagination"></div>
-        <div className="fullscreen-nav">
-          <button className="fullscreen-prev">‹</button>
-          <button className="fullscreen-next">›</button>
-        </div>
-      </div>
     </>
   );
 };

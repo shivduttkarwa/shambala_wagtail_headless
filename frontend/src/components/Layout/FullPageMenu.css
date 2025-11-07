@@ -49,14 +49,17 @@ body {
     font-family: "Cinzel", serif;
     font-size: 1.5rem;
     font-weight: 600;
-    color: var(--text);
     text-decoration: none;
     letter-spacing: -0.5px;
     transition: color 0.3s ease;
+    /* Adaptive color based on background */
+    color: var(--text, #2C2C2C);
+    /* On hero section with dark video background, use light text */
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
 }
 
 .logo-text:hover {
-    color: var(--accent);
+    color: var(--accent, #5B7C4F);
 }
 
 #menu-toggle {
@@ -227,51 +230,6 @@ body {
     box-shadow: none;
 }
 
-.btn {
-    display: flex;
-    gap: 10px;
-    padding: 14px;
-    border-radius: 10px;
-    background: var(--accent);
-    font-family: "Space Grotesk", sans-serif;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 600;
-}
-
-.btn:hover {
-    background: var(--text);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(44, 44, 44, 0.3);
-}
-
-.btn:focus {
-    outline: none;
-    box-shadow: none;
-}
-
-.navbar__btn {
-    color: var(--cream);
-}
-
-.navbar__btn:hover {
-    color: var(--cream);
-}
-
-.navbar__btn svg {
-    transition: all 0.3s ease;
-}
-
-.navbar__btn:hover svg {
-    transform: translateX(3px);
-}
-
-.navbar__btn:hover svg path {
-    fill: var(--cream);
-}
 
 .page-content {
     height: 100%;
@@ -342,6 +300,22 @@ body {
 
 #spacer-section {
     height: 100vh;
+}
+
+/* Logo adaptive color based on section background */
+/* On hero section with dark video/image background */
+.hero-section ~ .navbar .logo-text,
+.navbar:has(+ .hero-section) .logo-text,
+body:has(.hero-section) .navbar .logo-text {
+    color: var(--cream, #FAF8F3);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+/* On light sections */
+.navbar:not(.navbar--hero) .logo-text,
+body:not(:has(.hero-section)) .navbar .logo-text {
+    color: var(--text, #2C2C2C);
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.5);
 }
 
 /* Mobile Optimizations */
@@ -435,10 +409,6 @@ body {
         padding: 0 15px;
     }
     
-    /* Hide CTA button on mobile to save space */
-    .navbar__btn {
-        display: none;
-    }
     
     /* Larger touch target for menu toggle */
     #menu-toggle {

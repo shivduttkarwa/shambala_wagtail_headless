@@ -320,12 +320,6 @@ const FullPageMenu: React.FC<FullPageMenuProps> = ({ isOpen, onToggle }) => {
               <span className="toggle-line-top"></span>
               <span className="toggle-line-bottom"></span>
             </button>
-            <a href="#contact" className="navbar__btn btn">
-              <span className="btn-txt">GET QUOTE</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="14" fill="none">
-                <path fill="currentColor" d="m17.76 6.857-5.727-5.688a.821.821 0 0 0-1.147.01.81.81 0 0 0-.01 1.139l4.33 4.3H.819a.821.821 0 0 0-.578.238.81.81 0 0 0 .578 1.388h14.389l-4.33 4.3a.813.813 0 0 0-.19.892.813.813 0 0 0 .765.505.824.824 0 0 0 .581-.248l5.727-5.688a.81.81 0 0 0 0-1.148Z" />
-              </svg>
-            </a>
           </div>
         </nav>
       </header>
