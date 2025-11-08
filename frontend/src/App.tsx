@@ -6,7 +6,6 @@ import { ScrollTrigger } from './lib/gsap';
 
 import {
   IconLinksSection,
-  HorizontalCarousel,
   MediaComparator,
   StudioSection,
   QualityHomes,
@@ -112,7 +111,6 @@ function App() {
         />
 
         <IconLinksSection />
-        <HorizontalCarousel title="Our Premium Services" />
 
         {/* Examples / layout blocks */}
         <StudioSection />
