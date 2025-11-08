@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchHomePage, WagtailHomePage } from '../services/api';
+import { fetchHomePage, WagtailHomePage, HeroSectionData } from '../services/api';
 
 // Transform Wagtail data to component props format
 interface HeroProps {
@@ -27,6 +27,117 @@ interface UseHomeReturn {
   wagtailData: WagtailHomePage | null;
 }
 
+interface UseNewHeroReturn {
+  loading: boolean;
+  error: string | null;
+  heroData: HeroSectionData | null;
+}
+
+export const useNewHero = (): UseNewHeroReturn => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [heroData, setHeroData] = useState<HeroSectionData | null>(null);
+
+  useEffect(() => {
+    const loadHeroData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const data = await fetchHomePage();
+        
+        if (data && data.hero_section_data) {
+          setHeroData(data.hero_section_data);
+        } else {
+          console.warn('No hero section data found, using fallback');
+          throw new Error('No hero section data found');
+        }
+      } catch (err) {
+        console.error('Failed to load hero section data:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load hero section data');
+        
+        // Provide fallback data when API is not available
+        const fallbackHeroData: HeroSectionData = {
+          title: 'Transform your<br/>outdoor dreams',
+          cta: {
+            text: 'Get a Free Site Visit',
+            link: '#contact'
+          },
+          background: {
+            video_url: `${import.meta.env.BASE_URL}images/hero2.mp4`
+          },
+          slides: [
+            {
+              id: 1,
+              title: 'Garden Design & Installation',
+              description: 'Custom garden designs that transform your outdoor space.',
+              button: {
+                text: 'Read more',
+                url: '#',
+                is_external: false
+              },
+              image: {
+                url: `${import.meta.env.BASE_URL}images/1.jpg`,
+                small: `${import.meta.env.BASE_URL}images/1.jpg`,
+                tablet: `${import.meta.env.BASE_URL}images/1.jpg`,
+                alt: 'Garden Design'
+              }
+            },
+            {
+              id: 2,
+              title: 'Outdoor Living Spaces',
+              description: 'Create the perfect outdoor entertainment area.',
+              button: {
+                text: 'Read more',
+                url: '#',
+                is_external: false
+              },
+              image: {
+                url: `${import.meta.env.BASE_URL}images/2.jpg`,
+                small: `${import.meta.env.BASE_URL}images/2.jpg`,
+                tablet: `${import.meta.env.BASE_URL}images/2.jpg`,
+                alt: 'Landscaping Project'
+              }
+            },
+            {
+              id: 3,
+              title: 'Sustainable Eco-Friendly Gardens',
+              description: 'Environmentally conscious landscaping solutions.',
+              button: {
+                text: 'Read more',
+                url: '#',
+                is_external: false
+              },
+              image: {
+                url: `${import.meta.env.BASE_URL}images/3.jpg`,
+                small: `${import.meta.env.BASE_URL}images/3.jpg`,
+                tablet: `${import.meta.env.BASE_URL}images/3.jpg`,
+                alt: 'Sustainable Landscaping'
+              }
+            }
+          ],
+          settings: {
+            autoplay_enabled: true,
+            autoplay_delay: 5000
+          }
+        };
+        
+        setHeroData(fallbackHeroData);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadHeroData();
+  }, []);
+
+  return {
+    loading,
+    error,
+    heroData,
+  };
+};
+
 export const useHome = (): UseHomeReturn => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +164,7 @@ export const useHome = (): UseHomeReturn => {
             description: data.description || '',
             ctaText: data.cta_text || 'Get a Free Site Visit',
             ctaLink: data.cta_link || '#contact',
-            backgroundImage: data.background_image?.full_url || data.background_image?.url ? `${API_BASE}${data.background_image.url}` : '',
+            backgroundImage: data.background_image?.url ? `${API_BASE}${data.background_image.url}` : '',
             serviceBoxes: data.service_boxes_list?.map(box => ({
               id: box.id,
               index: box.index,

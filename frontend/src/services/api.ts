@@ -5,7 +5,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api/
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 3000, // Reduced timeout for faster fallback
+  timeout: 10000, // Increased timeout to handle image processing
 });
 
 export interface WagtailImage {
@@ -26,9 +26,54 @@ export interface WagtailServiceBox {
   } | null;
 }
 
+export interface HeroSlide {
+  id: number;
+  title: string;
+  description: string;
+  button?: {
+    text: string;
+    url: string;
+    is_external: boolean;
+  } | null;
+  image: {
+    url: string;
+    small: string;
+    tablet: string;
+    alt: string;
+  };
+  full_image?: {
+    url: string;
+    large: string;
+    alt: string;
+  };
+}
+
+export interface HeroSectionData {
+  title: string;
+  cta: {
+    text: string;
+    link: string;
+  };
+  background: {
+    video_url?: string;
+    image?: {
+      url: string;
+      large: string;
+      alt: string;
+    };
+  };
+  slides: HeroSlide[];
+  settings: {
+    autoplay_enabled: boolean;
+    autoplay_delay: number;
+  };
+}
+
 export interface WagtailHomePage {
   id: number;
   title: string;
+  hero_section_data: HeroSectionData;
+  // Legacy fields for backward compatibility
   main_title: string[];
   typed_texts_list: string[];
   description: string;
@@ -53,7 +98,7 @@ export const fetchHomePage = async (): Promise<WagtailHomePage | null> => {
     const response = await api.get<WagtailApiResponse<WagtailHomePage>>('/pages/', {
       params: {
         type: 'home.HomePage',
-        fields: 'title,main_title,typed_texts_list,description,cta_text,cta_link,background_image,service_boxes_list,intro,hero',
+        fields: 'title,hero_section_data',
         limit: 1,
       },
     });

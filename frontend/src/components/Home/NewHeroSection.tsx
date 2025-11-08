@@ -1,8 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, Component } from "react";
 import "./NewHeroSection.css";
+import { useNewHero } from "../../hooks/useHome";
 
 import Swiper from "swiper";
-import { Navigation, Pagination, Autoplay, EffectCreative, Mousewheel, Keyboard } from "swiper/modules";
+import { Navigation, Pagination, Autoplay, EffectCreative } from "swiper/modules";
+
+// Register Swiper modules
+Swiper.use([Navigation, Pagination, Autoplay, EffectCreative]);
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -12,166 +16,291 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
-const NewHeroSection: React.FC = () => {
+// Error Boundary Component
+class HeroErrorBoundary extends Component<
+  { children: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(): { hasError: boolean } {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.warn('Hero section error caught:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <section className="hero-section">
+          <div className="hero-loading">Loading hero content...</div>
+        </section>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+const NewHeroSectionContent: React.FC = () => {
   const heroSectionRef = useRef<HTMLElement | null>(null);
-  let heroSwiper: Swiper | null = null;
+  const swiperRef = useRef<Swiper | null>(null);
+  const { loading, error, heroData } = useNewHero();
   // Fullscreen functionality removed for simplicity
 
   useEffect(() => {
-    // Initialize Swiper modules
-    Swiper.use([Navigation, Pagination, Autoplay, EffectCreative, Mousewheel, Keyboard]);
+    // Skip if still loading data
+    if (loading || !heroData) return;
 
-    // HERO SWIPER
-    heroSwiper = new Swiper('.heroSwiper', {
-      loop: true,
-      speed: 900,
-      effect: 'creative',
-      creativeEffect: {
-        prev: { translate: ['-20%', 0, -1], opacity: 0 },
-        next: { translate: ['100%', 0, 0], opacity: 0 },
-      },
-      pagination: { el: '.slider-container .swiper-pagination', type: 'fraction' },
-      navigation: {
-        nextEl: '#rs-next',
-        prevEl: '#rs-prev',
-      },
-      autoplay: { delay: 5000, disableOnInteraction: false },
-      on: {
-        autoplayTimeLeft(swiper, _time, progress) {
-          const activeSlide = swiper.slides[swiper.activeIndex] as HTMLElement;
-          const bar = activeSlide?.querySelector('.slide-progress-fill') as HTMLElement;
-          if (bar) bar.style.width = `${(1 - progress) * 100}%`;
-        },
-        slideChange() {
-          document.querySelectorAll('.slide-progress-fill').forEach((b: Element) => {
-            (b as HTMLElement).style.width = '0%';
-          });
+    let isComponentMounted = true;
+
+    // Fallback: Hide poster after maximum wait time to prevent indefinite loading
+    const maxWaitTimer = setTimeout(() => {
+      if (isComponentMounted) {
+        const poster = document.querySelector('#new-hero-section .video-poster');
+        if (poster && (poster as HTMLElement).style.opacity !== '0') {
+          console.log('Fallback: hiding poster after max wait time');
+          (poster as HTMLElement).style.opacity = '0';
         }
       }
-    });
+    }, 10000); // Give Vimeo more time - 10 seconds max
 
-    // Video plays automatically on desktop, static background on mobile
-
-    // Entrance animations - with immediate fallback to visible state
-    const tl = gsap.timeline();
-    
-    // Ensure elements are visible first, then animate from hidden state
-    gsap.set('.hero-text h1, .discover-box, .slider-container', { 
-      opacity: 1, 
-      x: 0, 
-      y: 0 
-    });
-
-    // Animate from hidden to visible state
-    tl.fromTo('.hero-text h1', 
-      { 
-        y: 96, 
-        opacity: 0 
-      },
-      { 
-        duration: 1.05, 
-        y: 0, 
-        opacity: 1, 
-        ease: 'power3.out', 
-        delay: 0.2 
-      }
-    )
-    .fromTo('.discover-box', 
-      { 
-        x: -60, 
-        opacity: 0 
-      },
-      { 
-        duration: 0.9, 
-        x: 0, 
-        opacity: 1, 
-        ease: 'power3.out' 
-      }, 
-      "-=0.6"
-    )
-    .fromTo('.slider-container', 
-      { 
-        x: 60, 
-        opacity: 0 
-      },
-      { 
-        duration: 0.9, 
-        x: 0, 
-        opacity: 1, 
-        ease: 'power3.out' 
-      }, 
-      "-=0.5"
-    );
-
-    // Safety fallback: ensure content is visible after a delay
-    setTimeout(() => {
-      const heroContent = document.querySelector('.hero-content');
-      const heroText = document.querySelector('.hero-text h1');
-      const discoverBox = document.querySelector('.discover-box');
-      const sliderContainer = document.querySelector('.slider-container');
+    // Wait for content to be loaded and DOM to be ready
+    const initializeSwiper = () => {
+      if (!isComponentMounted) return;
       
-      if (heroContent) {
-        gsap.set([heroText, discoverBox, sliderContainer], {
-          opacity: 1,
-          x: 0,
-          y: 0,
-          clearProps: "transform,opacity"
-        });
-      }
-    }, 2000);
+      const swiperElement = document.querySelector('#new-hero-section .heroSwiper');
+      const nextEl = document.querySelector('#new-hero-section #rs-next');
+      const prevEl = document.querySelector('#new-hero-section #rs-prev');
+      
+      console.log('Swiper init check:', { swiperElement, nextEl, prevEl, existing: swiperRef.current });
+      
+      if (!swiperElement || swiperRef.current) return;
 
-    // Subtle parallax on video
-    const videoTween = gsap.to('.video-background', {
-      scrollTrigger: { 
-        trigger: '.hero-section', 
-        start: 'top top', 
-        end: 'bottom top', 
-        scrub: 1 
-      },
-      scale: 1.12, 
-      ease: 'none'
-    });
+      // Check if we have slides
+      const slides = swiperElement.querySelectorAll('.swiper-slide');
+      console.log('Found slides:', slides.length);
+      
+      if (slides.length === 0) {
+        console.warn('No slides found for Swiper');
+        return;
+      }
+
+      try {
+        // HERO SWIPER - use specific selector
+        swiperRef.current = new Swiper('#new-hero-section .heroSwiper', {
+          loop: slides.length > 1, // Only loop if we have multiple slides
+          speed: 900,
+          effect: 'creative',
+          creativeEffect: {
+            prev: { translate: ['-20%', 0, -1], opacity: 0 },
+            next: { translate: ['100%', 0, 0], opacity: 0 },
+          },
+          navigation: {
+            nextEl: '#new-hero-section #rs-next',
+            prevEl: '#new-hero-section #rs-prev',
+          },
+          autoplay: heroData?.settings.autoplay_enabled !== false ? { 
+            delay: heroData?.settings.autoplay_delay || 5000, 
+            disableOnInteraction: false 
+          } : false,
+          on: {
+            autoplayTimeLeft(swiper, _time, progress) {
+              const activeSlide = swiper.slides[swiper.activeIndex] as HTMLElement;
+              const bar = activeSlide?.querySelector('.slide-progress-fill') as HTMLElement;
+              if (bar) bar.style.width = `${(1 - progress) * 100}%`;
+            },
+            slideChange() {
+              document.querySelectorAll('#new-hero-section .slide-progress-fill').forEach((b: Element) => {
+                (b as HTMLElement).style.width = '0%';
+              });
+            },
+            init() {
+              console.log('Swiper initialized successfully');
+            }
+          }
+        });
+        
+        console.log('Swiper created:', swiperRef.current);
+      } catch (error) {
+        console.error('Swiper initialization failed:', error);
+      }
+    };
+
+    // Initialize GSAP animations after DOM is ready
+    const initializeAnimations = () => {
+      if (!isComponentMounted) return;
+
+      try {
+        // Wait for elements to exist in the DOM - use specific selectors for this component
+        const heroText = heroSectionRef.current?.querySelector('#new-hero-section .hero-text h1');
+        const discoverBox = heroSectionRef.current?.querySelector('#new-hero-section .discover-box');
+        const sliderContainer = heroSectionRef.current?.querySelector('#new-hero-section .slider-container');
+        const videoBackground = heroSectionRef.current?.querySelector('#new-hero-section .video-background');
+        
+        // Only proceed if elements exist and are in the DOM
+        if (!heroText || !discoverBox || !sliderContainer) {
+          // Retry after a short delay
+          setTimeout(initializeAnimations, 100);
+          return;
+        }
+
+        // Clear any existing animations on these elements first
+        gsap.killTweensOf([heroText, discoverBox, sliderContainer]);
+
+        // Set initial visible state (no animations during development)
+        gsap.set([heroText, discoverBox, sliderContainer], { 
+          opacity: 1, 
+          x: 0, 
+          y: 0,
+          clearProps: "transform"
+        });
+
+        // Subtle parallax on video (only if video element exists)
+        if (videoBackground) {
+          gsap.to(videoBackground, {
+            scrollTrigger: { 
+              trigger: heroSectionRef.current, 
+              start: 'top top', 
+              end: 'bottom top', 
+              scrub: 1 
+            },
+            scale: 1.05, 
+            ease: 'none'
+          });
+        }
+      } catch (error) {
+        console.warn('GSAP animation initialization failed:', error);
+      }
+    };
+
+    // Initialize with proper timing - increased delays to ensure DOM is ready
+    const swiperTimer = setTimeout(initializeSwiper, 800);
+    const animationTimer = setTimeout(initializeAnimations, 400);
 
     return () => {
-      // Cleanup
-      heroSwiper?.destroy(true, true);
+      isComponentMounted = false;
       
-      // Kill all GSAP animations and timelines
-      tl?.kill();
-      videoTween?.scrollTrigger?.kill();
-      videoTween?.kill();
-      ScrollTrigger.getAll().forEach((st) => st.kill());
-      gsap.killTweensOf("*");
+      // Capture current ref value for cleanup
+      const currentHeroRef = heroSectionRef.current;
+      
+      // Cleanup timers
+      clearTimeout(maxWaitTimer);
+      clearTimeout(swiperTimer);
+      clearTimeout(animationTimer);
+      
+      // Cleanup Swiper
+      if (swiperRef.current) {
+        try {
+          swiperRef.current.destroy(true, true);
+          swiperRef.current = null;
+        } catch (error) {
+          console.warn('Swiper cleanup failed:', error);
+        }
+      }
+      
+      // Kill GSAP animations more safely
+      try {
+        ScrollTrigger.getAll().forEach((st) => {
+          try {
+            st.kill();
+          } catch (e) {
+            console.warn('ScrollTrigger cleanup failed:', e);
+          }
+        });
+        
+        // Only kill tweens for this component's elements using captured ref
+        if (currentHeroRef) {
+          gsap.killTweensOf(currentHeroRef.querySelectorAll('*'));
+        }
+      } catch (error) {
+        console.warn('GSAP cleanup failed:', error);
+      }
     };
-  }, []);
+  }, [loading, heroData]);
+
+  if (loading) {
+    return (
+      <section className="hero-section">
+        <div className="hero-loading">Loading...</div>
+      </section>
+    );
+  }
+
+  if (error) {
+    console.warn('Hero section API error:', error);
+  }
 
   return (
     <>
-      <section ref={heroSectionRef} className="hero-section">
-        <video 
-          className="video-background" 
-          autoPlay 
-          muted 
-          loop 
-          playsInline 
-          controls={false}
-          disablePictureInPicture
-          preload="auto"
-        >
-          <source src={`${import.meta.env.BASE_URL}images/hero2.mp4`} type="video/mp4" />
-        </video>
+      <section ref={heroSectionRef} className="hero-section new-hero-section" id="new-hero-section">
+        {/* Poster image - always show if available, serves as fallback/loading state */}
+        {heroData?.background.image && (
+          <div 
+            className={`image-background ${heroData?.background.video_url ? 'video-poster' : ''}`}
+            style={{ backgroundImage: `url(${heroData.background.image.url})` }}
+          />
+        )}
+        
+        {/* Video - loads over the poster image */}
+        {heroData?.background.video_url && (
+          heroData.background.video_url.includes('vimeo.com') ? (
+            <iframe
+              className="video-background vimeo-iframe"
+              style={{ backgroundColor: heroData?.background.image?.url ? 'transparent' : '#1a1a1a' }}
+              src={`https://player.vimeo.com/video/${heroData.background.video_url.match(/vimeo\.com\/(\d+)/)?.[1]}?autoplay=1&loop=1&muted=1&background=1&controls=0&title=0&byline=0&portrait=0&dnt=1&quality=540p&autopause=0&playsinline=1&transparent=0`}
+              allow="autoplay; fullscreen"
+              loading="eager"
+              title="Hero Background Video"
+              onLoad={() => {
+                // Just wait a very long time to ensure Vimeo is actually playing
+                setTimeout(() => {
+                  const poster = document.querySelector('#new-hero-section .video-poster');
+                  if (poster) {
+                    (poster as HTMLElement).style.opacity = '0';
+                  }
+                }, 5000); // Wait 5 full seconds for Vimeo
+              }}
+            />
+          ) : (
+            <video 
+              className="video-background" 
+              autoPlay 
+              muted 
+              loop 
+              playsInline 
+              controls={false}
+              disablePictureInPicture
+              preload="auto"
+              onCanPlay={() => {
+                // Hide poster immediately when MP4 video can play
+                const poster = document.querySelector('#new-hero-section .video-poster');
+                if (poster) {
+                  (poster as HTMLElement).style.opacity = '0';
+                }
+              }}
+            >
+              <source src={heroData.background.video_url} type="video/mp4" />
+            </video>
+          )
+        )}
         <div className="hero-overlay"></div>
 
         <div className="hero-content">
           <div className="hero-text">
-            <h1>Transform your<br/>outdoor dreams</h1>
+            <h1 dangerouslySetInnerHTML={{ __html: heroData?.title || 'Transform your<br/>outdoor dreams' }} />
           </div>
 
           <div className="hero-bottom">
             <div className="discover-box">
-              <a href="#contact" className="cta-link">
-                <span className="cta-text" data-text="Get a Free Site Visit">
-                  <span>Get a Free Site Visit</span>
+              <a href={heroData?.cta.link || '#contact'} className="cta-link">
+                <span className="cta-text" data-text={heroData?.cta.text || 'Get a Free Site Visit'}>
+                  <span>{heroData?.cta.text || 'Get a Free Site Visit'}</span>
                 </span>
                 <span className="arrow">→</span>
               </a>
@@ -203,44 +332,77 @@ const NewHeroSection: React.FC = () => {
 
               <div className="swiper heroSwiper">
                 <div className="swiper-wrapper">
-                  <div className="swiper-slide">
-                    <div className="slide-wrapper">
-                      <img className="slide-image" src={`${import.meta.env.BASE_URL}images/1.jpg`} alt="Garden Design" loading="lazy"/>
-                      <div className="slide-progress-bar"><div className="slide-progress-fill"></div></div>
-                      <div className="slide-content">
-                        <h3 className="slide-title">Garden Design & Installation</h3>
-                        <a href="#" className="slide-link">
-                          Read more <span className="arrow">→</span>
-                        </a>
+                  {heroData?.slides && heroData.slides.length > 0 && heroData.slides.some(slide => slide.image?.url) ? 
+                    heroData.slides.filter(slide => slide.image?.url).map((slide) => (
+                      <div key={slide.id} className="swiper-slide">
+                        <div className="slide-wrapper">
+                          <img 
+                            className="slide-image" 
+                            src={slide.image.url}
+                            srcSet={`${slide.image.small} 300w, ${slide.image.tablet} 700w, ${slide.image.url} 600w`}
+                            sizes="(max-width: 768px) 300px, (max-width: 1024px) 700px, 600px"
+                            alt={slide.image.alt || slide.title} 
+                            loading="lazy"
+                            key={`${slide.id}-${Date.now()}`}
+                          />
+                          <div className="slide-progress-bar"><div className="slide-progress-fill"></div></div>
+                          <div className="slide-content">
+                            <h3 className="slide-title">{slide.title}</h3>
+                            {slide.button && (
+                              <a 
+                                href={slide.button.url} 
+                                className="slide-link"
+                                target={slide.button.is_external ? '_blank' : '_self'}
+                                rel={slide.button.is_external ? 'noopener noreferrer' : undefined}
+                              >
+                                {slide.button.text} <span className="arrow">→</span>
+                              </a>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <div className="swiper-slide">
-                    <div className="slide-wrapper">
-                      <img className="slide-image" src={`${import.meta.env.BASE_URL}images/2.jpg`} alt="Landscaping Project" loading="lazy"/>
-                      <div className="slide-progress-bar"><div className="slide-progress-fill"></div></div>
-                      <div className="slide-content">
-                        <h3 className="slide-title">Outdoor Living Spaces</h3>
-                        <a href="#" className="slide-link">
-                          Read more <span className="arrow">→</span>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="swiper-slide">
-                    <div className="slide-wrapper">
-                      <img className="slide-image" src={`${import.meta.env.BASE_URL}images/3.jpg`} alt="Sustainable Landscaping" loading="lazy"/>
-                      <div className="slide-progress-bar"><div className="slide-progress-fill"></div></div>
-                      <div className="slide-content">
-                        <h3 className="slide-title">Sustainable Eco-Friendly Gardens</h3>
-                        <a href="#" className="slide-link">
-                          Read more <span className="arrow">→</span>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
+                    )) : (
+                      // Fallback slides if no data
+                      <>
+                        <div className="swiper-slide">
+                          <div className="slide-wrapper">
+                            <img className="slide-image" src={`${import.meta.env.BASE_URL}images/1.jpg`} alt="Garden Design" loading="lazy"/>
+                            <div className="slide-progress-bar"><div className="slide-progress-fill"></div></div>
+                            <div className="slide-content">
+                              <h3 className="slide-title">Garden Design & Installation</h3>
+                              <a href="#" className="slide-link">
+                                Read more <span className="arrow">→</span>
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="swiper-slide">
+                          <div className="slide-wrapper">
+                            <img className="slide-image" src={`${import.meta.env.BASE_URL}images/2.jpg`} alt="Landscaping Project" loading="lazy"/>
+                            <div className="slide-progress-bar"><div className="slide-progress-fill"></div></div>
+                            <div className="slide-content">
+                              <h3 className="slide-title">Outdoor Living Spaces</h3>
+                              <a href="#" className="slide-link">
+                                Read more <span className="arrow">→</span>
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="swiper-slide">
+                          <div className="slide-wrapper">
+                            <img className="slide-image" src={`${import.meta.env.BASE_URL}images/3.jpg`} alt="Sustainable Landscaping" loading="lazy"/>
+                            <div className="slide-progress-bar"><div className="slide-progress-fill"></div></div>
+                            <div className="slide-content">
+                              <h3 className="slide-title">Sustainable Eco-Friendly Gardens</h3>
+                              <a href="#" className="slide-link">
+                                Read more <span className="arrow">→</span>
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </>
+                    )}
                 </div>
-                <div className="swiper-pagination"></div>
               </div>
             </div>
           </div>
@@ -248,6 +410,14 @@ const NewHeroSection: React.FC = () => {
       </section>
 
     </>
+  );
+};
+
+const NewHeroSection: React.FC = () => {
+  return (
+    <HeroErrorBoundary>
+      <NewHeroSectionContent />
+    </HeroErrorBoundary>
   );
 };
 

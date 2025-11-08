@@ -5,7 +5,6 @@ import { useEffect } from 'react';
 import { ScrollTrigger } from './lib/gsap';
 
 import {
-  HeroSection,
   IconLinksSection,
   HorizontalCarousel,
   MediaComparator,
@@ -24,23 +23,10 @@ function App() {
 
   // Global ScrollTrigger coordination
   useEffect(() => {
-    // Refresh ScrollTrigger when content loads
     if (!loading) {
-      setTimeout(() => {
-        ScrollTrigger.refresh();
-      }, 300);
+      ScrollTrigger.refresh();
     }
   }, [loading]);
-
-  // Handle window resize for all scroll components
-  useEffect(() => {
-    const handleResize = () => {
-      ScrollTrigger.refresh();
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   // Vite base path for files in /public
   const publicUrl = import.meta.env.BASE_URL || '/';

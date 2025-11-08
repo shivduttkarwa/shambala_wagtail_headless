@@ -42,8 +42,76 @@
   height: 100%;
   object-fit: cover;
   transform: translateZ(0);
-  /* Ensure video stays in background */
+  /* Ensure video is behind poster initially */
   z-index: 1;
+  border: none;
+}
+
+.vimeo-iframe {
+  /* Optimized Vimeo iframe for better performance and full coverage */
+  width: 100vw;
+  height: 100vh;
+  /* Use transform3d for better performance */
+  transform: translate3d(-50%, -50%, 0) scale(1.02);
+  top: 50%;
+  left: 50%;
+  will-change: transform;
+  
+  /* Ensure minimum coverage on all aspect ratios */
+  min-width: 100%;
+  min-height: 100%;
+  
+  /* Disable pointer events for background video */
+  pointer-events: none;
+  
+  /* Ensure video is behind poster initially */
+  z-index: 1;
+}
+
+/* Responsive adjustments for different screen sizes */
+@media (max-aspect-ratio: 16/9) {
+  .vimeo-iframe {
+    width: 177.78vh; /* 16:9 aspect ratio width for tall screens */
+    height: 100vh;
+  }
+}
+
+@media (min-aspect-ratio: 16/9) {
+  .vimeo-iframe {
+    width: 100vw;
+    height: 56.25vw; /* 16:9 aspect ratio height for wide screens */
+  }
+}
+
+.image-background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: translateZ(0);
+  /* Ensure background stays in background */
+  z-index: 1;
+}
+
+.video-poster {
+  /* When used as video poster, ensure very slow transition */
+  transition: opacity 2s ease-in-out;
+  z-index: 2; /* Above video initially */
+}
+
+
+.hero-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text, #2C2C2C);
+  font-size: 1.2rem;
+  background: var(--color-bg, #FAF8F3);
 }
 
 .hero-overlay {
@@ -84,18 +152,29 @@
 .hero-text h1 {
   font-size: clamp(2rem, 6vw, 6rem);
   font-weight: 300;
-  line-height: 1.06;
+  line-height: 1.1;
   letter-spacing: -.03em;
-  text-wrap: balance;
+  /* Allow manual line breaks via br tags but prevent automatic text wrapping */
   color: #f2f4f8;
   text-shadow: 0 1px 18px rgba(0,0,0,.35);
+  text-align: left; /* Ensure left alignment */
   font-family: "cinzel", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   margin: 0;
+  /* Remove any cursor/caret styling */
+  caret-color: transparent;
+  cursor: default;
+  user-select: none;
   /* Ensure title starts visible for debugging - GSAP will animate */
   opacity: 1;
   transform: translateY(0);
   /* Force hardware acceleration */
   will-change: transform, opacity;
+}
+
+/* Remove any cursor/caret pseudo-elements */
+.hero-text h1::after,
+.hero-text h1::before {
+  display: none !important;
 }
 
 .hero-bottom {
@@ -212,6 +291,7 @@
 
 .hero-section .slide-wrapper {
   position: relative;
+  overflow: visible;
 }
 
 .hero-section .slide-image {
@@ -227,10 +307,12 @@
 
 .hero-section .slide-progress-bar {
   position: absolute;
-  inset: auto 0 0 0;
-  height: 3px;
-  background: #e5e5e5;
-  z-index: 10;
+  bottom: -1.5px;
+  left: 0;
+  right: 0;
+  height: 1.5px;
+  background: rgba(255, 255, 255, 0.3);
+  z-index: 15;
 }
 
 .hero-section .slide-progress-fill {
@@ -369,16 +451,6 @@
   color: #fff;
 }
 
-/* Pagination placement */
-.slider-container .swiper-pagination {
-  position: absolute !important;
-  right: 72px;
-  bottom: 14px;
-  width: auto !important;
-  color: #9aa0a6;
-  font-weight: 600;
-  font-size: .9rem;
-}
 
 
 
@@ -398,9 +470,6 @@
     height: 28vh;
   }
   
-  .slider-container .swiper-pagination {
-    right: 68px;
-  }
 }
 
 /* Mobile styles for phones */
@@ -424,7 +493,7 @@
   }
   
   .hero-text {
-    text-align: center;
+    text-align: left;
     margin-bottom: 2.5rem;
     align-content: start;
   }
@@ -466,10 +535,6 @@
     width: 50px;
   }
   
-  .slider-container .swiper-pagination {
-    right: 55px;
-    font-size: .8rem;
-  }
   
   .slide-content {
     padding: 1rem 1rem 1.3rem;

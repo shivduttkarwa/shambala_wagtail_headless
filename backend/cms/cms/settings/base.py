@@ -89,7 +89,10 @@ CORS_ALLOW_ALL_ORIGINS = True  # Only for development
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",  # Desktop Vite dev server
     "http://localhost:5173",  # Desktop alternative
+    "http://127.0.0.1:5174",  # Desktop Vite dev server (alt port)
+    "http://localhost:5174",  # Desktop alternative (alt port)
     "http://192.168.1.8:5173",  # Mobile access to Vite
+    "http://192.168.1.8:5174",  # Mobile access to Vite (alt port)
     "http://127.0.0.1:3000",  # Alternative ports
     "http://localhost:3000",
     "http://192.168.1.8:3000",

@@ -21,48 +21,47 @@ interface HorizontalCarouselProps {
 
 const publicUrl = import.meta.env.BASE_URL;
 
-
 const defaultSlides: SlideData[] = [
   {
     id: 1,
     title: 'Garden Design',
     description: 'Transform your outdoor space with professional landscaping services tailored to your vision.',
-  image: `${publicUrl}images/1.jpg`,
+    image: `${publicUrl}images/1.jpg`,
     link: '#'
   },
   {
     id: 2,
     title: 'Lawn Care',
     description: 'Keep your lawn healthy and vibrant year-round with our expert maintenance programs.',
-  image: `${publicUrl}images/2.jpg`,
+    image: `${publicUrl}images/2.jpg`,
     link: '#'
   },
   {
     id: 3,
     title: 'Tree Services',
     description: 'Expert tree trimming, removal, and maintenance for the safety and beauty of your property.',
-  image: `${publicUrl}images/3.jpg`,
+    image: `${publicUrl}images/3.jpg`,
     link: '#'
   },
   {
     id: 4,
     title: 'Irrigation Systems',
     description: 'Smart water systems for efficient garden care that saves water and maintains beauty.',
-  image: `${publicUrl}images/4.jpg`,
+    image: `${publicUrl}images/4.jpg`,
     link: '#'
   },
   {
     id: 5,
     title: 'Hardscaping',
     description: 'Beautiful patios, walkways, and outdoor structures that enhance your living space.',
-  image: `${publicUrl}images/5.jpg`,
+    image: `${publicUrl}images/5.jpg`,
     link: '#'
   },
   {
     id: 6,
     title: 'Outdoor Lighting',
     description: 'Illuminate your landscape with elegant lighting solutions for evening beauty.',
-  image: `${publicUrl}images/6.jpg`,
+    image: `${publicUrl}images/6.jpg`,
     link: '#'
   }
 ];
@@ -80,75 +79,39 @@ const HorizontalCarousel: React.FC<HorizontalCarouselProps> = ({
     const swiperEl = section.querySelector('.swiper-container') as HTMLElement;
     if (!swiperEl) return;
 
-    let swiper: Swiper | null = null;
-    let tl: gsap.core.Timeline | null = null;
-
-    // Initialize Swiper
-    swiper = new Swiper(swiperEl, {
+    // Initialize Swiper only
+    const swiper = new Swiper(swiperEl, {
       modules: [Pagination],
       slidesPerView: 'auto',
       spaceBetween: 24,
-      centeredSlides: window.innerWidth >= 820,
-      grabCursor: false,
+      centeredSlides: false,
+      grabCursor: true,
+      allowTouchMove: true,
+      freeMode: true,
       pagination: {
         el: '.swiper-pagination',
         clickable: true,
       },
-    });
-
-    // Wait a moment for Swiper to fully initialize
-    setTimeout(() => {
-      if (!swiper) return;
-
-      // Get the horizontal scrolling distance to center last slide
-      const getScrollAmount = () => {
-        const slides = swiper!.slides;
-        if (!slides || slides.length === 0) return 0;
-        
-        let totalWidth = 0;
-        slides.forEach((slide: Element) => {
-          totalWidth += (slide as HTMLElement).offsetWidth;
-        });
-        totalWidth += 24 * (slides.length - 1); // Add spacing
-        
-        // Get last slide width
-        const lastSlide = slides[slides.length - 1] as HTMLElement;
-        const lastSlideWidth = lastSlide.offsetWidth;
-        const viewportWidth = window.innerWidth;
-        
-        // To center last slide: we need to move wrapper so that
-        // last slide's center aligns with viewport center
-        const movement = totalWidth - viewportWidth / 2 - lastSlideWidth / 2;
-        
-        return -movement;
-      };
-
-      // Create GSAP timeline for horizontal scroll
-      tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: section,
-          pin: true,
-          start: 'top 5%',
-          scrub: 1,
-          end: () => `+=${Math.abs(getScrollAmount())}`,
-          invalidateOnRefresh: true,
+      breakpoints: {
+        768: {
+          spaceBetween: 24,
+          slidesPerView: 2.5,
+        },
+        1024: {
+          spaceBetween: 24,
+          slidesPerView: 3,
+        },
+        1200: {
+          spaceBetween: 24,
+          slidesPerView: 3.5,
         }
-      });
-
-      // Animate the swiper wrapper horizontally
-      tl.to(swiperEl.querySelector('.swiper-wrapper'), {
-        x: getScrollAmount,
-        ease: 'none',
-      });
-    }, 100);
+      }
+    });
 
     // Cleanup
     return () => {
-      if (tl) {
-        tl.scrollTrigger?.kill();
-      }
       if (swiper) {
-        swiper.destroy();
+        swiper.destroy(true, true);
       }
     };
   }, [slides]);

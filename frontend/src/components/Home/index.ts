@@ -1,4 +1,3 @@
-export { default as HeroSection } from './HeroSection';
 export { default as IconLinksSection } from './IconLinksSection';
 export { default as SliderModal } from './SliderModal';
 export { default as HorizontalCarousel } from './HorizontalCarousel';

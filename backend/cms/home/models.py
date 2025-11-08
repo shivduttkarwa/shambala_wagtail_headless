@@ -1,153 +1,180 @@
 from django.db import models
-
-from wagtail.models import Page, Orderable
-from wagtail.fields import RichTextField
-from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel
-from wagtail.images import get_image_model_string
-from modelcluster.fields import ParentalKey
-from modelcluster.models import ClusterableModel
-
-# API exposure
+from wagtail.models import Page
+from wagtail.fields import StreamField
+from wagtail.admin.panels import FieldPanel
 from wagtail.api import APIField
 from wagtail.images.api.fields import ImageRenditionField
 
-
-class ServiceBox(Orderable):
-    """
-    Service boxes for the hero section grid
-    """
-    page = ParentalKey('home.HomePage', on_delete=models.CASCADE, related_name='service_boxes')
-    title = models.CharField(max_length=100)
-    description = models.TextField()
-    image = models.ForeignKey(
-        get_image_model_string(),
-        null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
-    )
-    
-    panels = [
-        FieldPanel('title'),
-        FieldPanel('description'),
-        FieldPanel('image'),
-    ]
-    
-    def __str__(self):
-        return self.title
-
-
-class TypedText(Orderable):
-    """
-    Rotating typed text phrases for hero section
-    """
-    page = ParentalKey('home.HomePage', on_delete=models.CASCADE, related_name='typed_texts')
-    text = models.CharField(max_length=200)
-    
-    panels = [
-        FieldPanel('text'),
-    ]
-    
-    def __str__(self):
-        return self.text
+# Import blocks
+from .blocks import BodyStreamBlock, HeroSectionBlock
 
 
 class HomePage(Page):
     """
-    Enhanced headless home page with full hero section support:
-      - Hero content (title words, description, CTA)
-      - Background image
-      - Typed text phrases (rotating)
-      - Service boxes grid
-    Exposed on the API with optimized image renditions.
+    Modern HomePage with flexible content blocks and hero section
     """
-
-    # Hero section fields
-    main_title_word_1 = models.CharField(max_length=50, default="we", help_text="First word of main title")
-    main_title_word_2 = models.CharField(max_length=50, default="make", help_text="Second word of main title")
-    description = models.TextField(blank=True, help_text="Hero description text")
-    cta_text = models.CharField(max_length=100, default="Get a Free Site Visit", help_text="Call-to-action button text")
-    cta_link = models.CharField(max_length=200, default="#contact", help_text="Call-to-action link")
     
-    # Background image
-    background_image = models.ForeignKey(
-        get_image_model_string(),
-        null=True, blank=True, on_delete=models.SET_NULL, related_name="+",
-        help_text="Hero background image"
+    # Hero section (single block)
+    hero_section = StreamField(
+        [('hero', HeroSectionBlock())],
+        max_num=1,
+        blank=True,
+        default=list,
+        help_text="Hero section with video background and slider"
     )
     
-    # Legacy fields (keeping for backward compatibility)
-    intro = RichTextField(blank=True)
-    hero_image = models.ForeignKey(
-        get_image_model_string(),
-        null=True, blank=True, on_delete=models.SET_NULL, related_name="+"
+    # Page body content (flexible blocks)
+    body = StreamField(
+        BodyStreamBlock(),
+        blank=True,
+        default=list,
+        help_text="Main page content using flexible blocks"
     )
-
+    
+    # Admin panel configuration
     content_panels = Page.content_panels + [
-        MultiFieldPanel([
-            FieldPanel("main_title_word_1"),
-            FieldPanel("main_title_word_2"),
-            FieldPanel("description"),
-            FieldPanel("cta_text"),
-            FieldPanel("cta_link"),
-            FieldPanel("background_image"),
-        ], heading="Hero Section"),
-        InlinePanel('typed_texts', label="Typed Text Phrases", min_num=1),
-        InlinePanel('service_boxes', label="Service Boxes", min_num=0, max_num=8),
-        MultiFieldPanel([
-            FieldPanel("intro"),
-            FieldPanel("hero_image"),
-        ], heading="Legacy Fields", classname="collapsed"),
+        FieldPanel("hero_section", heading="Hero Section"),
+        FieldPanel("body", heading="Page Content"),
     ]
-
+    
     # API fields for headless frontend
     api_fields = [
         APIField("title"),
-        APIField("main_title"),
-        APIField("typed_texts_list"),
-        APIField("description"),
-        APIField("cta_text"),
-        APIField("cta_link"),
-        APIField("background_image", serializer=ImageRenditionField("fill-1920x1080|format-webp")),
-        APIField("service_boxes_list"),
-        # Legacy fields
-        APIField("intro"),
-        APIField("hero", serializer=ImageRenditionField("fill-1600x900|format-webp")),
+        APIField("slug"),
+        APIField("hero_section_data"),  # Custom property
+        APIField("body"),
     ]
-
-    @property
-    def main_title(self):
-        """Return main title as array for frontend"""
-        return [self.main_title_word_1, self.main_title_word_2]
     
     @property
-    def typed_texts_list(self):
-        """Return typed texts as array for frontend"""
-        return [item.text for item in self.typed_texts.all()]
-    
-    @property
-    def service_boxes_list(self):
-        """Return service boxes with optimized images for frontend"""
-        boxes = []
-        for i, box in enumerate(self.service_boxes.all()):
-            box_data = {
-                'id': box.pk,
-                'index': i,
-                'title': box.title,
-                'description': box.description,
+    def hero_section_data(self):
+        """
+        Transform hero section StreamField to frontend-compatible format
+        """
+        if not self.hero_section:
+            return None
+            
+        # Get the first (and only) hero block
+        hero_block = None
+        for block in self.hero_section:
+            if block.block_type == 'hero':
+                hero_block = block.value
+                break
+                
+        if not hero_block:
+            return None
+        
+        # Transform slides data
+        slides_data = []
+        for slide in hero_block.get('slides', []):
+            slide_data = {
+                'id': len(slides_data) + 1,  # Simple incremental ID
+                'title': slide.get('title', ''),
+                'description': slide.get('description', ''),
             }
             
-            if box.image:
-                # Generate multiple image sizes for optimal loading
-                box_data['image'] = {
-                    'url': box.image.get_rendition('fill-400x300|format-webp').url,
-                    'small': box.image.get_rendition('fill-200x150|format-webp').url,
-                    'full': box.image.get_rendition('width-1920|format-webp').url,
+            # Handle button configuration
+            button_text = slide.get('button_text', 'Read more')
+            is_external = slide.get('is_external_link', False)
+            
+            # Check if this is an old slide with just a 'link' field
+            legacy_link = slide.get('link', '')
+            
+            if is_external and slide.get('external_url'):
+                slide_data['button'] = {
+                    'text': button_text,
+                    'url': slide.get('external_url'),
+                    'is_external': True
+                }
+            elif not is_external and slide.get('page_link'):
+                # Get the page URL
+                page_url = '/'
+                try:
+                    if hasattr(slide['page_link'], 'url'):
+                        page_url = slide['page_link'].url
+                    elif hasattr(slide['page_link'], 'get_url'):
+                        page_url = slide['page_link'].get_url()
+                except:
+                    page_url = '/'
+                    
+                slide_data['button'] = {
+                    'text': button_text,
+                    'url': page_url,
+                    'is_external': False
+                }
+            elif legacy_link:
+                # Handle legacy slides that only have the 'link' field
+                slide_data['button'] = {
+                    'text': button_text,
+                    'url': legacy_link,
+                    'is_external': True  # Assume external for legacy links
                 }
             else:
-                box_data['image'] = None
-                
-            boxes.append(box_data)
-        return boxes
-
-    @property
-    def hero(self):
-        """Legacy property for backward compatibility"""
-        return self.hero_image
+                # Default button for slides without any link configuration
+                slide_data['button'] = {
+                    'text': button_text,
+                    'url': '#',
+                    'is_external': False
+                }
+            
+            # Main slider image - optimized for actual slide dimensions
+            if slide.get('image'):
+                slide_data['image'] = {
+                    'url': f"http://127.0.0.1:8000{slide['image'].get_rendition('fill-600x240|format-webp').url}",  # Desktop: ~240px height, wide aspect
+                    'small': f"http://127.0.0.1:8000{slide['image'].get_rendition('fill-300x120|format-webp').url}",  # Mobile: ~120px height 
+                    'tablet': f"http://127.0.0.1:8000{slide['image'].get_rendition('fill-700x280|format-webp').url}",  # Tablet: ~280px height
+                    'alt': slide['image'].title or slide.get('title', ''),
+                }
+            
+            # Full image for lightbox/fullscreen
+            if slide.get('full_image'):
+                slide_data['full_image'] = {
+                    'url': f"http://127.0.0.1:8000{slide['full_image'].get_rendition('width-1920|format-webp').url}",
+                    'large': f"http://127.0.0.1:8000{slide['full_image'].get_rendition('fill-1920x1080|format-webp').url}",
+                    'alt': slide['full_image'].title or slide.get('title', ''),
+                }
+            elif slide.get('image'):
+                # Use main image as fallback
+                slide_data['full_image'] = {
+                    'url': f"http://127.0.0.1:8000{slide['image'].get_rendition('width-1920|format-webp').url}",
+                    'large': f"http://127.0.0.1:8000{slide['image'].get_rendition('fill-1920x1080|format-webp').url}",
+                    'alt': slide['image'].title or slide.get('title', ''),
+                }
+            
+            slides_data.append(slide_data)
+        
+        # Background media
+        background_data = {}
+        if hero_block.get('background_video'):
+            background_data['video_url'] = hero_block['background_video']
+            
+        if hero_block.get('background_image'):
+            background_data['image'] = {
+                'url': f"http://127.0.0.1:8000{hero_block['background_image'].get_rendition('fill-1920x1080|format-webp').url}",
+                'large': f"http://127.0.0.1:8000{hero_block['background_image'].get_rendition('width-1920|format-webp').url}",
+                'alt': hero_block['background_image'].title or 'Hero background',
+            }
+        
+        # Parse autoplay delay (convert string to int)
+        autoplay_delay = 5000
+        try:
+            if hero_block.get('autoplay_delay'):
+                autoplay_delay = int(hero_block['autoplay_delay'])
+        except (ValueError, TypeError):
+            autoplay_delay = 5000
+        
+        return {
+            'title': hero_block.get('hero_title', 'Transform your<br/>outdoor dreams'),
+            'cta': {
+                'text': hero_block.get('cta_text', 'Get a Free Site Visit'),
+                'link': hero_block.get('cta_link', '#contact'),
+            },
+            'background': background_data,
+            'slides': slides_data,
+            'settings': {
+                'autoplay_enabled': hero_block.get('autoplay_enabled', True),
+                'autoplay_delay': autoplay_delay,
+            }
+        }
+    
+    class Meta:
+        verbose_name = "Home Page"
