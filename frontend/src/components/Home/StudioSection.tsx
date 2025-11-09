@@ -59,7 +59,9 @@ const StudioSection: React.FC<StudioSectionProps> = ({
           <div className="right-content">
             {/* Content area: 60% height */}
             <div className="content-area">
-              <h2 className="studio-title">{title}</h2>
+              <h2 className="studio-title" style={{ textAlign: 'center' }}>
+                {title}
+              </h2>
               {subtitle && <h3 className="studio-subtitle">{subtitle}</h3>}
               <div className="studio-description">
                 {description.map((paragraph, index) => (

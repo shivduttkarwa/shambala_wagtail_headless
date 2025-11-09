@@ -248,7 +248,6 @@ const NewHeroSectionContent: React.FC = () => {
         )}
         
         {/* Video - loads over the poster image */}
-        {console.log('Hero background video URL:', heroData?.background.video_url)}
         {heroData?.background.video_url && (
           heroData.background.video_url.includes('vimeo.com') ? (
             <iframe

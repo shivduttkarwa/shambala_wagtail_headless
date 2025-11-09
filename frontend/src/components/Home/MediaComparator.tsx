@@ -1,6 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import './MediaComparator.css';
-import { gsap, ScrollTrigger } from '../../lib/gsap';
+import { gsap } from '../../lib/gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface Slide {
   image: string;
@@ -169,7 +172,7 @@ const MediaComparator: React.FC<MediaComparatorProps> = ({
           const positionToUse = lastProgressRef.current || progressRef.current.value;
           updateSlidePositions(positionToUse);
         },
-        onEnter: (self) => {
+        onEnter: () => {
           // Restore last position when re-entering
           if (lastProgressRef.current > 0) {
             // Force the ScrollTrigger to use our stored position
@@ -224,7 +227,9 @@ const MediaComparator: React.FC<MediaComparatorProps> = ({
       {title && (
         <div className="dummy-block">
           <div className="text-container">
-            <h2>{title}</h2>
+            <h2 style={{ textAlign: 'center' }}>
+              {title}
+            </h2>
             {subtitle && <p>{subtitle}</p>}
             <h3>Scroll Down<br/>↓</h3>
           </div>
@@ -270,7 +275,9 @@ const MediaComparator: React.FC<MediaComparatorProps> = ({
                       <div className="media-overlay-stack">
                         <div className="wrapper wrapper-xl">
                           <div className="text-container">
-                            <h2>{slide.title}</h2>
+                            <h2 className="slide-title" style={{ textAlign: 'center' }}>
+                              {slide.title}
+                            </h2>
                             <p>{slide.subtitle}</p>
                             {slide.buttonText && slide.buttonUrl && (
                               <a href={slide.buttonUrl} className="cta-button">

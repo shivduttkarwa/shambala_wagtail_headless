@@ -40,7 +40,9 @@ const DreamHomeJourney: React.FC<DreamHomeJourneyProps> = ({
     >
       <div className="dream-overlay"></div>
       <div className="dream-container">
-        <h2 className="dream-title">{title}</h2>
+        <h2 className="dream-title" style={{ textAlign: 'center' }}>
+          {title}
+        </h2>
         <p className="dream-description">{description}</p>
         <div className="dream-ctas">
           <a href={primaryCta.link} className="dream-button dream-button-primary">

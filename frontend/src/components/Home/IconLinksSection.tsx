@@ -70,7 +70,9 @@ const IconLinksSection: React.FC<IconLinksSectionProps> = ({
   return (
     <section className="icon-links-section" id="services">
       <div className="section-container">
-        <h2 className="section-title">{title}</h2>
+        <h2 className="section-title" style={{ textAlign: 'center' }}>
+          {title}
+        </h2>
         <div className="icon-links-grid">
           {iconLinks.map((item) => (
             <a key={item.id} href={item.link} className="icon-link-item">

@@ -49,11 +49,14 @@ const QualityHomes: React.FC<QualityHomesProps> = ({
   ctaText = "Learn more about building with Shambala Homes",
   ctaLink = "#"
 }) => {
+
   return (
     <section className="quality-homes">
       <div className="quality-container">
         <div className="quality-header">
-          <h2 className="quality-main-title">{mainTitle}</h2>
+          <h2 className="quality-main-title" style={{ textAlign: 'center' }}>
+            {mainTitle}
+          </h2>
         </div>
 
         <div className="quality-content">
