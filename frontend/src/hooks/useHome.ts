@@ -155,12 +155,15 @@ export const useHome = (): UseHomeReturn => {
         const data = await fetchHomePage();
         
         if (data) {
-          console.log('Fetched Wagtail data:', data);
           setWagtailData(data);
           
           // Set body blocks
-          console.log('Body blocks from API:', data.body_content_data);
-          setBodyBlocks(data.body_content_data || []);
+          if (Array.isArray(data.body_content_data)) {
+            setBodyBlocks(data.body_content_data);
+          } else {
+            console.warn('Body content data is not an array:', data.body_content_data);
+            setBodyBlocks([]);
+          }
           
           // Transform Wagtail data to HeroSection component format
           const API_BASE = import.meta.env.VITE_API_URL?.replace('/api/v2', '') || 'http://127.0.0.1:8000';

@@ -324,6 +324,231 @@ class MultiImageContentBlock(StructBlock):
         label = 'Multi Image Content Section'
 
 
+class QualityHomesFeatureBlock(StructBlock):
+    """
+    Individual feature for Quality Homes section
+    """
+    icon = CharBlock(
+        max_length=10,
+        default="✓",
+        help_text="Feature icon (emoji or symbol)"
+    )
+    title = CharBlock(
+        max_length=200,
+        help_text="Feature title"
+    )
+    description = TextBlock(
+        help_text="Feature description"
+    )
+    image = ImageChooserBlock(
+        help_text="Feature image"
+    )
+    
+    class Meta:
+        icon = 'tick'
+        label = 'Quality Feature'
+
+
+class QualityHomesBlock(StructBlock):
+    """
+    Quality Homes section with features list and CTA
+    """
+    # Section content
+    main_title = CharBlock(
+        max_length=200,
+        default="Building quality homes for over 40 years",
+        help_text="Main section title"
+    )
+    
+    # Features list
+    features = ListBlock(
+        QualityHomesFeatureBlock(),
+        min_num=1,
+        max_num=8,
+        help_text="Quality features and benefits"
+    )
+    
+    # CTA using reusable CTABlock
+    cta = CTABlock(
+        required=False,
+        help_text="Optional call to action button"
+    )
+    
+    class Meta:
+        icon = 'home'
+        label = 'Quality Homes Section'
+
+
+class DreamHomeJourneyBlock(StructBlock):
+    """
+    Dream Home Journey section with title, description, dual CTAs, and background image
+    """
+    # Section content
+    title = CharBlock(
+        max_length=200,
+        default="Begin your dream home journey with Shambala Homes",
+        help_text="Main section title"
+    )
+    description = TextBlock(
+        default="Discover modern house designs and packages to turn your vision into reality — from open living spaces to stunning alfresco homes.",
+        help_text="Section description"
+    )
+    
+    # Background image
+    background_image = ImageChooserBlock(
+        help_text="Background image for the section"
+    )
+    
+    # Primary CTA using reusable CTABlock
+    primary_cta = CTABlock(
+        help_text="Primary call to action button"
+    )
+    
+    # Secondary CTA using reusable CTABlock
+    secondary_cta = CTABlock(
+        help_text="Secondary call to action button"
+    )
+    
+    class Meta:
+        icon = 'home'
+        label = 'Dream Home Journey Section'
+
+
+class BlogPostBlock(StructBlock):
+    """
+    Individual blog post block
+    """
+    title = CharBlock(
+        max_length=200,
+        help_text="Blog post title"
+    )
+    date = CharBlock(
+        max_length=50,
+        default="14 Oct, 2025",
+        help_text="Publication date (e.g., '14 Oct, 2025')"
+    )
+    category = CharBlock(
+        max_length=100,
+        default="Design Tips",
+        help_text="Blog post category"
+    )
+    excerpt = TextBlock(
+        help_text="Brief description/excerpt of the blog post"
+    )
+    image = ImageChooserBlock(
+        help_text="Blog post image"
+    )
+    
+    # Link configuration
+    is_external_link = BooleanBlock(
+        default=False,
+        required=False,
+        help_text="Check if this links to an external website"
+    )
+    external_url = URLBlock(
+        required=False,
+        help_text="External URL (only used if 'External Link' is checked)"
+    )
+    page_link = PageChooserBlock(
+        required=False,
+        help_text="Internal page to link to (only used if 'External Link' is NOT checked)"
+    )
+    
+    class Meta:
+        icon = 'doc-full'
+        label = 'Blog Post'
+
+
+class FeaturedBlogPostBlock(StructBlock):
+    """
+    Featured blog post block (larger, for left side)
+    """
+    title = CharBlock(
+        max_length=200,
+        help_text="Featured blog post title"
+    )
+    date = CharBlock(
+        max_length=50,
+        default="14 Oct, 2025",
+        help_text="Publication date (e.g., '14 Oct, 2025')"
+    )
+    category = CharBlock(
+        max_length=100,
+        default="Design Tips",
+        help_text="Blog post category"
+    )
+    excerpt = TextBlock(
+        help_text="Brief description/excerpt of the blog post"
+    )
+    image = ImageChooserBlock(
+        help_text="Main blog post image"
+    )
+    
+    # Additional content for featured post
+    additional_text = TextBlock(
+        required=False,
+        help_text="Additional text content (optional)"
+    )
+    additional_image = ImageChooserBlock(
+        required=False,
+        help_text="Additional small image (optional)"
+    )
+    
+    # Link configuration
+    is_external_link = BooleanBlock(
+        default=False,
+        required=False,
+        help_text="Check if this links to an external website"
+    )
+    external_url = URLBlock(
+        required=False,
+        help_text="External URL (only used if 'External Link' is checked)"
+    )
+    page_link = PageChooserBlock(
+        required=False,
+        help_text="Internal page to link to (only used if 'External Link' is NOT checked)"
+    )
+    
+    class Meta:
+        icon = 'doc-full-inverse'
+        label = 'Featured Blog Post'
+
+
+class BlogSectionBlock(StructBlock):
+    """
+    Blog section with featured post on left and 2 posts on right
+    """
+    # Section content
+    section_title = CharBlock(
+        max_length=200,
+        default="Design and building tips from our blog",
+        help_text="Main section title"
+    )
+    
+    # Featured post (left side - large)
+    featured_post = FeaturedBlogPostBlock(
+        help_text="Featured blog post (displayed large on the left)"
+    )
+    
+    # Sidebar posts (right side - 2 smaller posts)
+    sidebar_posts = ListBlock(
+        BlogPostBlock(),
+        min_num=2,
+        max_num=2,
+        help_text="Exactly 2 blog posts for the right side (smaller)"
+    )
+    
+    # Section CTA using reusable CTABlock
+    cta = CTABlock(
+        required=False,
+        help_text="Optional call to action button at the bottom"
+    )
+    
+    class Meta:
+        icon = 'list-ul'
+        label = 'Blog Section'
+
+
 # Main StreamField for page body content
 class BodyStreamBlock(StreamBlock):
     """
@@ -333,6 +558,9 @@ class BodyStreamBlock(StreamBlock):
     commercial_projects = CommercialProjectsBlock()
     horizontal_slider = HorizontalSliderBlock()
     multi_image_content = MultiImageContentBlock()
+    quality_homes = QualityHomesBlock()
+    dream_home_journey = DreamHomeJourneyBlock()
+    blog_section = BlogSectionBlock()
     
     class Meta:
         block_counts = {
@@ -340,4 +568,7 @@ class BodyStreamBlock(StreamBlock):
             'residential_projects': {'max_num': 1},  # Max 1 residential projects section
             'commercial_projects': {'max_num': 1},  # Max 1 commercial projects section
             'multi_image_content': {'max_num': 5},  # Max 5 multi-image content sections
+            'quality_homes': {'max_num': 1},  # Max 1 quality homes section
+            'dream_home_journey': {'max_num': 1},  # Max 1 dream home journey section
+            'blog_section': {'max_num': 1},  # Max 1 blog section
         }

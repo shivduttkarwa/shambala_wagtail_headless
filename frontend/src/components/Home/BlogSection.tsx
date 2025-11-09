@@ -11,6 +11,11 @@ interface BlogPost {
   imageAlt: string;
   link: string;
   featured?: boolean;
+  additional_text?: string;
+  additional_image?: {
+    src: string;
+    alt: string;
+  } | null;
 }
 
 interface BlogSectionProps {
@@ -91,21 +96,25 @@ const BlogSection: React.FC<BlogSectionProps> = ({
                   <p className="blog-description">{featuredPost.excerpt}</p>
                   
                   {/* Additional content for featured blog */}
-                  <div className="blog-additional-content">
-                    <p className="blog-extra-text">
-                      Our comprehensive approach combines years of expertise with innovative design techniques. 
-                      We work closely with each client to understand their vision and bring it to life through 
-                      careful planning and meticulous execution.
-                    </p>
-                    <div className="blog-extra-image">
-                      <img 
-                        src={`${publicUrl}images/14.jpg`} 
-                        alt="Landscaping detail" 
-                        className="blog-small-image"
-                        loading="lazy"
-                      />
+                  {(featuredPost.additional_text || featuredPost.additional_image) && (
+                    <div className="blog-additional-content">
+                      {featuredPost.additional_text && (
+                        <p className="blog-extra-text">
+                          {featuredPost.additional_text}
+                        </p>
+                      )}
+                      {featuredPost.additional_image && (
+                        <div className="blog-extra-image">
+                          <img 
+                            src={featuredPost.additional_image.src} 
+                            alt={featuredPost.additional_image.alt || 'Additional content'} 
+                            className="blog-small-image"
+                            loading="lazy"
+                          />
+                        </div>
+                      )}
                     </div>
-                  </div>
+                  )}
                   
                   <span className="blog-read-more">Read More</span>
                 </div>

@@ -53,22 +53,6 @@ export interface WagtailHomePage {
   hero?: WagtailImage;
 }
 
-// Legacy types (keeping for backward compatibility)
-export interface StrapiImage {
-  id: number;
-  url: string;
-  alternativeText?: string;
-  caption?: string;
-}
-
-export interface ServiceCard {
-  id: number;
-  title: string;
-  description: string;
-  image: StrapiImage;
-  link: string;
-}
-
 export interface IconLink {
   id: number;
   title: string;

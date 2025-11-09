@@ -82,6 +82,23 @@ COMPONENT_IMAGE_MAPPING = {
         'slides.image': 'media_comparator',
     },
     
+    # Quality Homes section
+    'quality_homes': {
+        'features.image': 'content_image',
+    },
+    
+    # Dream Home Journey section
+    'dream_home_journey': {
+        'background_image': 'hero_background',
+    },
+    
+    # Blog section
+    'blog_section': {
+        'blog_featured.image': 'media_comparator',  # Large featured post image
+        'blog_post.image': 'content_image',         # Smaller sidebar post images
+        'blog_additional.image': 'content_image',   # Additional small image in featured post
+    },
+    
     # Default fallback
     'default': {
         'image': 'content_image',

@@ -178,8 +178,109 @@ export interface MultiImageContentBlock {
   id: string;
 }
 
+// Quality Homes Block Types
+export interface QualityHomesFeature {
+  icon: string;
+  title: string;
+  description: string;
+  image: {
+    src: string;
+    desktop?: string;
+    tablet?: string;
+    mobile?: string;
+    alt: string;
+  } | null;
+}
+
+export interface QualityHomesBlock {
+  type: 'quality_homes';
+  value: {
+    main_title: string;
+    features: QualityHomesFeature[];
+    cta?: {
+      button_text: string;
+      is_external_link: boolean;
+      external_url?: string;
+      page_link?: {
+        id: number;
+        title: string;
+        url: string;
+      };
+    } | null;
+  };
+  id: string;
+}
+
+// Dream Home Journey Block Types
+export interface DreamHomeJourneyBlock {
+  type: 'dream_home_journey';
+  value: {
+    title: string;
+    description: string;
+    primary_cta?: {
+      button_text: string;
+      is_external_link: boolean;
+      external_url?: string;
+      page_link?: {
+        id: number;
+        title: string;
+        url: string;
+      };
+    } | null;
+    secondary_cta?: {
+      button_text: string;
+      is_external_link: boolean;
+      external_url?: string;
+      page_link?: {
+        id: number;
+        title: string;
+        url: string;
+      };
+    } | null;
+    background_image?: {
+      src: string;
+      desktop?: string;
+      tablet?: string;
+      mobile?: string;
+      alt: string;
+    } | null;
+  };
+  id: string;
+}
+
+// Blog Section Block Types
+export interface BlogPost {
+  id: number;
+  title: string;
+  date: string;
+  category: string;
+  excerpt: string;
+  imageSrc: string;
+  imageAlt: string;
+  link: string;
+  featured?: boolean;
+  additional_text?: string;
+  additional_image?: {
+    src: string;
+    alt: string;
+  } | null;
+}
+
+export interface BlogSectionBlock {
+  type: 'blog_section';
+  value: {
+    section_title: string;
+    posts: BlogPost[];
+    cta?: {
+      text: string;
+      link: string;
+    } | null;
+  };
+  id: string;
+}
+
 // Body Content Types
-export type BodyBlock = HorizontalSliderBlock | ResidentialProjectsBlock | CommercialProjectsBlock | MultiImageContentBlock;
+export type BodyBlock = HorizontalSliderBlock | ResidentialProjectsBlock | CommercialProjectsBlock | MultiImageContentBlock | QualityHomesBlock | DreamHomeJourneyBlock | BlogSectionBlock;
 
 export interface WagtailHomePage {
   id: number;

@@ -193,6 +193,12 @@ class HomePage(Page):
                 block_data['value'] = self._serialize_horizontal_slider_block(block.value)
             elif block.block_type == 'multi_image_content':
                 block_data['value'] = self._serialize_multi_image_content_block(block.value)
+            elif block.block_type == 'quality_homes':
+                block_data['value'] = self._serialize_quality_homes_block(block.value)
+            elif block.block_type == 'dream_home_journey':
+                block_data['value'] = self._serialize_dream_home_journey_block(block.value)
+            elif block.block_type == 'blog_section':
+                block_data['value'] = self._serialize_blog_section_block(block.value)
             else:
                 # Fallback for unknown block types
                 block_data['value'] = dict(block.value) if hasattr(block.value, 'items') else block.value
@@ -369,6 +375,236 @@ class HomePage(Page):
             'subtitle': block_value.get('section_subtitle', ''),
             'description': description_text,
             'images': images_data,
+            'cta': cta_data
+        }
+    
+    def _serialize_quality_homes_block(self, block_value):
+        """Serialize quality homes block with proper image URLs and CTA"""
+        features_data = []
+        
+        for feature in block_value.get('features', []):
+            feature_data = {
+                'icon': feature.get('icon', '✓'),
+                'title': feature.get('title', ''),
+                'description': feature.get('description', ''),
+            }
+            
+            # Handle feature image with global config
+            if feature.get('image'):
+                feature_data['image'] = generate_responsive_image_data(
+                    feature['image'], 'quality_homes', 'features.image'
+                )
+            else:
+                feature_data['image'] = None
+                
+            features_data.append(feature_data)
+        
+        # Handle CTA data
+        cta_data = None
+        if block_value.get('cta'):
+            cta = block_value['cta']
+            cta_data = {
+                'button_text': cta.get('button_text', 'Learn More'),
+                'is_external_link': cta.get('is_external_link', False),
+                'external_url': cta.get('external_url', ''),
+            }
+            
+            # Handle page link
+            if cta.get('page_link'):
+                try:
+                    page_url = '/'
+                    if hasattr(cta['page_link'], 'url'):
+                        page_url = cta['page_link'].url
+                    elif hasattr(cta['page_link'], 'get_url'):
+                        page_url = cta['page_link'].get_url()
+                    cta_data['page_link'] = {
+                        'id': cta['page_link'].id,
+                        'title': cta['page_link'].title,
+                        'url': page_url
+                    }
+                except:
+                    cta_data['page_link'] = None
+            else:
+                cta_data['page_link'] = None
+        
+        return {
+            'main_title': block_value.get('main_title', 'Building quality homes for over 40 years'),
+            'features': features_data,
+            'cta': cta_data
+        }
+    
+    def _serialize_dream_home_journey_block(self, block_value):
+        """Serialize dream home journey block with background image and dual CTAs"""
+        
+        # Handle primary CTA data
+        primary_cta_data = None
+        if block_value.get('primary_cta'):
+            primary_cta = block_value['primary_cta']
+            primary_cta_data = {
+                'button_text': primary_cta.get('button_text', 'Learn More'),
+                'is_external_link': primary_cta.get('is_external_link', False),
+                'external_url': primary_cta.get('external_url', ''),
+            }
+            
+            # Handle page link
+            if primary_cta.get('page_link'):
+                try:
+                    page_url = '/'
+                    if hasattr(primary_cta['page_link'], 'url'):
+                        page_url = primary_cta['page_link'].url
+                    elif hasattr(primary_cta['page_link'], 'get_url'):
+                        page_url = primary_cta['page_link'].get_url()
+                    primary_cta_data['page_link'] = {
+                        'id': primary_cta['page_link'].id,
+                        'title': primary_cta['page_link'].title,
+                        'url': page_url
+                    }
+                except:
+                    primary_cta_data['page_link'] = None
+            else:
+                primary_cta_data['page_link'] = None
+        
+        # Handle secondary CTA data
+        secondary_cta_data = None
+        if block_value.get('secondary_cta'):
+            secondary_cta = block_value['secondary_cta']
+            secondary_cta_data = {
+                'button_text': secondary_cta.get('button_text', 'Learn More'),
+                'is_external_link': secondary_cta.get('is_external_link', False),
+                'external_url': secondary_cta.get('external_url', ''),
+            }
+            
+            # Handle page link
+            if secondary_cta.get('page_link'):
+                try:
+                    page_url = '/'
+                    if hasattr(secondary_cta['page_link'], 'url'):
+                        page_url = secondary_cta['page_link'].url
+                    elif hasattr(secondary_cta['page_link'], 'get_url'):
+                        page_url = secondary_cta['page_link'].get_url()
+                    secondary_cta_data['page_link'] = {
+                        'id': secondary_cta['page_link'].id,
+                        'title': secondary_cta['page_link'].title,
+                        'url': page_url
+                    }
+                except:
+                    secondary_cta_data['page_link'] = None
+            else:
+                secondary_cta_data['page_link'] = None
+        
+        # Handle background image with global config
+        background_image_data = None
+        if block_value.get('background_image'):
+            background_image_data = generate_responsive_image_data(
+                block_value['background_image'], 'dream_home_journey', 'background_image'
+            )
+        
+        return {
+            'title': block_value.get('title', 'Begin your dream home journey with Shambala Homes'),
+            'description': block_value.get('description', 'Discover modern house designs and packages to turn your vision into reality — from open living spaces to stunning alfresco homes.'),
+            'primary_cta': primary_cta_data,
+            'secondary_cta': secondary_cta_data,
+            'background_image': background_image_data
+        }
+    
+    def _serialize_blog_post(self, post_data, is_featured=False):
+        """Helper method to serialize a single blog post"""
+        # Handle link configuration
+        post_link = '#'
+        if post_data.get('is_external_link') and post_data.get('external_url'):
+            post_link = post_data.get('external_url')
+        elif not post_data.get('is_external_link') and post_data.get('page_link'):
+            try:
+                if hasattr(post_data['page_link'], 'url'):
+                    post_link = post_data['page_link'].url
+                elif hasattr(post_data['page_link'], 'get_url'):
+                    post_link = post_data['page_link'].get_url()
+            except:
+                post_link = '#'
+        
+        # Handle main image
+        image_data = None
+        if post_data.get('image'):
+            image_config = 'blog_featured' if is_featured else 'blog_post'
+            image_data = generate_responsive_image_data(
+                post_data['image'], 'blog_section', f'{image_config}.image'
+            )
+        
+        blog_post = {
+            'id': hash(str(post_data.get('title', '') + str(post_data.get('date', '')))),  # Generate unique ID
+            'title': post_data.get('title', ''),
+            'date': post_data.get('date', ''),
+            'category': post_data.get('category', 'Design Tips'),
+            'excerpt': post_data.get('excerpt', ''),
+            'imageSrc': image_data['src'] if image_data else None,
+            'imageAlt': image_data['alt'] if image_data else '',
+            'link': post_link,
+            'featured': is_featured
+        }
+        
+        # Add additional content for featured posts
+        if is_featured:
+            blog_post['additional_text'] = post_data.get('additional_text', '')
+            
+            # Handle additional image
+            if post_data.get('additional_image'):
+                additional_image_data = generate_responsive_image_data(
+                    post_data['additional_image'], 'blog_section', 'blog_additional.image'
+                )
+                blog_post['additional_image'] = {
+                    'src': additional_image_data['src'],
+                    'alt': additional_image_data['alt']
+                }
+            else:
+                blog_post['additional_image'] = None
+        
+        return blog_post
+    
+    def _serialize_blog_section_block(self, block_value):
+        """Serialize blog section block with featured post and sidebar posts"""
+        
+        # Serialize featured post (left side)
+        featured_post = None
+        if block_value.get('featured_post'):
+            featured_post = self._serialize_blog_post(block_value['featured_post'], is_featured=True)
+        
+        # Serialize sidebar posts (right side)
+        sidebar_posts = []
+        for post in block_value.get('sidebar_posts', []):
+            sidebar_posts.append(self._serialize_blog_post(post, is_featured=False))
+        
+        # Combine all posts for the component
+        all_posts = []
+        if featured_post:
+            all_posts.append(featured_post)
+        all_posts.extend(sidebar_posts)
+        
+        # Handle section CTA
+        cta_data = None
+        if block_value.get('cta'):
+            cta = block_value['cta']
+            cta_text = cta.get('button_text', 'View all blog posts')
+            cta_link = '#'
+            
+            if cta.get('is_external_link') and cta.get('external_url'):
+                cta_link = cta.get('external_url')
+            elif not cta.get('is_external_link') and cta.get('page_link'):
+                try:
+                    if hasattr(cta['page_link'], 'url'):
+                        cta_link = cta['page_link'].url
+                    elif hasattr(cta['page_link'], 'get_url'):
+                        cta_link = cta['page_link'].get_url()
+                except:
+                    cta_link = '#'
+            
+            cta_data = {
+                'text': cta_text,
+                'link': cta_link
+            }
+        
+        return {
+            'section_title': block_value.get('section_title', 'Design and building tips from our blog'),
+            'posts': all_posts,
             'cta': cta_data
         }
     
