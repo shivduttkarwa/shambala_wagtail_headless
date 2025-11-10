@@ -305,8 +305,8 @@
   background: var(--color-bg);
   color: var(--color-text);
   border-radius: 0;
-  overflow: hidden;
-  height: 250px;
+  overflow: visible; /* Changed from hidden to visible */
+  height: 260px; /* Increased height to accommodate progress bar */
   font-family: "Space Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   /* Ensure slider is visible initially */
   opacity: 1;
@@ -317,7 +317,8 @@
 
 .hero-section .swiper {
   width: 100% !important;
-  height: auto !important;
+  height: 250px !important; /* Fixed height for swiper */
+  overflow: hidden;
 }
 
 .hero-section .swiper-slide {
@@ -331,14 +332,18 @@
 
 .hero-section .slide-wrapper {
   position: relative;
-  overflow: visible;
+  height: 250px; /* Fixed height */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .hero-section .slide-image {
   width: 100%;
-  height: min(240px, 18vh);
+  height: 140px; /* Fixed height */
   object-fit: cover;
   display: block;
+  flex-shrink: 0;
   /* Optimize for smaller images in slider */
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
@@ -346,13 +351,13 @@
 }
 
 .hero-section .slide-progress-bar {
-  position: absolute;
-  bottom: -1.5px;
-  left: 0;
-  right: 0;
+  position: relative;
+  width: 100%;
   height: 1.5px;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.1);
   z-index: 15;
+  flex-shrink: 0;
+  margin-top: auto; /* Push to bottom */
 }
 
 .hero-section .slide-progress-fill {
@@ -362,9 +367,13 @@
 }
 
 .hero-section .slide-content {
-  padding: 1.6rem 1.8rem 2.1rem;
+  padding: 1.2rem 1.4rem 1.4rem;
   background: var(--color-bg);
   transition: transform .25s ease;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .hero-section .slide-wrapper:hover .slide-content {
@@ -391,6 +400,8 @@
   padding-bottom: .5rem;
   border-bottom: 2px solid var(--color-accent);
   transition: gap .3s ease, color .3s ease;
+  align-self: flex-start; /* Prevent stretching to full width */
+  width: fit-content; /* Ensure it only takes needed width */
 }
 
 .hero-section .slide-link:hover {
