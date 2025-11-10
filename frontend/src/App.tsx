@@ -1,44 +1,23 @@
 import './styles/App.css';
-import { Header, Footer, Preloader } from './components/Layout';
-import { useHome } from './hooks/useHome';
-import { useEffect } from 'react';
-import { ScrollTrigger } from './lib/gsap';
-
-import NewHeroSection from './components/Home/NewHeroSection';
-import BodyRenderer from './components/BodyRenderer';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Header, Footer } from './components/Layout';
+import HomePage from './pages/HomePage';
+import HouseDesignsRoute from './pages/HouseDesignsRoute';
 
 function App() {
-  // Load Wagtail page data
-  const { loading, bodyBlocks } = useHome();
-  
-  // Global ScrollTrigger coordination
-  useEffect(() => {
-    if (!loading && bodyBlocks.length > 0) {
-      // Add delay to ensure all components are mounted
-      const timer = setTimeout(() => {
-        ScrollTrigger.refresh();
-      }, 500);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [loading, bodyBlocks]);
-
-
   return (
-    <div className="App">
-      {/* Keep your preloader; optional: show it while Wagtail loads */}
-      {loading && <Preloader />}
-
-      <Header />
-      <main>
-        {/* New hero section */}
-        <NewHeroSection />
-        
-        {/* Render body blocks from Wagtail CMS */}
-        <BodyRenderer blocks={bodyBlocks} />
-      </main>
-      <Footer />
-    </div>
+    <Router basename="/shambala_homes">
+      <div className="App">
+        <Header />
+        <main>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/house-designs" element={<HouseDesignsRoute />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </Router>
   );
 }
 

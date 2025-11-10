@@ -40,8 +40,11 @@ INSTALLED_APPS = [
     "corsheaders",
     
     # Project apps
+    "core",  # Core reusable components (blocks, models, utils)
     "home",
+    "pages",  # General pages (internal pages & landing pages)
     "search",
+    "house_designs",
     
 
     # Wagtail

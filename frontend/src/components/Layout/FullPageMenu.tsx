@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { gsap } from '../../lib/gsap';
 import './FullPageMenu.css';
 
@@ -12,13 +13,14 @@ const FullPageMenu: React.FC<FullPageMenuProps> = ({ isOpen, onToggle }) => {
   const menuTimelineRef = useRef<gsap.core.Timeline | null>(null);
   const bgImgsRef = useRef<HTMLImageElement[]>([]);
   const itemsRef = useRef<HTMLLIElement[]>([]);
+  const navigate = useNavigate();
   
   // Use the same base URL pattern as other components
   const publicUrl = import.meta.env.BASE_URL || '/';
 
-  const handleMenuClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    const href = e.currentTarget.getAttribute('href');
-    if (href?.startsWith('#')) {
+  const handleMenuClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith('#')) {
+      // Hash link - scroll to section
       e.preventDefault();
       onToggle(); // Close menu first
       setTimeout(() => {
@@ -26,6 +28,13 @@ const FullPageMenu: React.FC<FullPageMenuProps> = ({ isOpen, onToggle }) => {
         if (element) {
           element.scrollIntoView({ behavior: 'smooth' });
         }
+      }, 500); // Wait for menu close animation
+    } else {
+      // Route link - use React Router navigation
+      e.preventDefault();
+      onToggle(); // Close menu first
+      setTimeout(() => {
+        navigate(href);
       }, 500); // Wait for menu close animation
     }
   };
@@ -248,7 +257,7 @@ const FullPageMenu: React.FC<FullPageMenuProps> = ({ isOpen, onToggle }) => {
             <img 
               ref={(el) => { if (el) bgImgsRef.current[2] = el; }}
               src={`${publicUrl}images/l2.jpg`} 
-              data-bg-for="about" 
+              data-bg-for="house-designs" 
               alt="" 
             />
           </div>
@@ -283,19 +292,19 @@ const FullPageMenu: React.FC<FullPageMenuProps> = ({ isOpen, onToggle }) => {
             <div className="menu-overlay__main">
               <ul>
                 <li ref={(el) => { if (el) itemsRef.current[0] = el; }}>
-                  <a href="#home" data-text-anim onClick={handleMenuClick}>HOME</a>
+                  <a href="#home" data-text-anim onClick={(e) => handleMenuClick(e, '#home')}>HOME</a>
                 </li>
                 <li ref={(el) => { if (el) itemsRef.current[1] = el; }}>
-                  <a href="#about" data-text-anim onClick={handleMenuClick}>ABOUT</a>
+                  <a href="/house-designs" data-text-anim onClick={(e) => handleMenuClick(e, '/house-designs')}>HOUSE DESIGNS</a>
                 </li>
                 <li ref={(el) => { if (el) itemsRef.current[2] = el; }}>
-                  <a href="#gallery" data-text-anim onClick={handleMenuClick}>GALLERY</a>
+                  <a href="#gallery" data-text-anim onClick={(e) => handleMenuClick(e, '#gallery')}>GALLERY</a>
                 </li>
                 <li ref={(el) => { if (el) itemsRef.current[3] = el; }}>
-                  <a href="#services" data-text-anim onClick={handleMenuClick}>SERVICES</a>
+                  <a href="#services" data-text-anim onClick={(e) => handleMenuClick(e, '#services')}>SERVICES</a>
                 </li>
                 <li ref={(el) => { if (el) itemsRef.current[4] = el; }}>
-                  <a href="#contact" data-text-anim onClick={handleMenuClick}>CONTACT</a>
+                  <a href="#contact" data-text-anim onClick={(e) => handleMenuClick(e, '#contact')}>CONTACT</a>
                 </li>
               </ul>
             </div>
