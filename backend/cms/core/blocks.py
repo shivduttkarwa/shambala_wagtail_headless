@@ -646,3 +646,88 @@ class CardGridBlock(blocks.StructBlock):
 #         label = "Dynamic Content Snippet"
 #         icon = "snippet"
 #         template = "core/blocks/dynamic_snippet_chooser.html"
+
+
+# ============================================================================
+# SITE SETTINGS BLOCKS (Header/Footer)
+# ============================================================================
+
+class SubMenuItemBlock(blocks.StructBlock):
+    """Sub-menu item for navigation."""
+    label = blocks.CharBlock(max_length=100)
+    link = blocks.URLBlock(required=False, help_text="External URL or leave blank for internal page")
+    page = PageChooserBlock(required=False, help_text="Or choose an internal page")
+    
+    class Meta:
+        label = "Sub-menu Item"
+        icon = "link"
+
+
+class NavigationBlock(blocks.StructBlock):
+    """Navigation menu item with optional sub-items."""
+    label = blocks.CharBlock(max_length=100, help_text="Menu item text")
+    aria_label = blocks.CharBlock(max_length=100, help_text="Accessibility label")
+    link = blocks.URLBlock(required=False, help_text="External URL or leave blank for internal page")
+    page = PageChooserBlock(required=False, help_text="Or choose an internal page")
+    sub_items = blocks.ListBlock(SubMenuItemBlock(), required=False, help_text="Add sub-menu items")
+    
+    class Meta:
+        label = "Menu Item"
+        icon = "list-ul"
+
+
+class FooterLinkBlock(blocks.StructBlock):
+    """Individual footer link."""
+    text = blocks.CharBlock(max_length=100)
+    link = blocks.URLBlock(required=False, help_text="External URL")
+    page = PageChooserBlock(required=False, help_text="Or choose an internal page")
+    
+    class Meta:
+        label = "Footer Link"
+        icon = "link"
+
+
+class FooterColumnBlock(blocks.StructBlock):
+    """Footer column with heading and links."""
+    heading = blocks.CharBlock(max_length=100, help_text="Column heading (e.g., 'Quick Links')")
+    links = blocks.ListBlock(FooterLinkBlock())
+    
+    class Meta:
+        label = "Footer Column"
+        icon = "list-ul"
+
+
+class FooterBlock(blocks.StructBlock):
+    """Footer section configuration."""
+    section_type = blocks.ChoiceBlock(
+        choices=[
+            ('columns', 'Link Columns'),
+            ('text', 'Text Content'),
+            ('contact', 'Contact Info'),
+        ],
+        default='columns',
+        help_text="Type of footer section"
+    )
+    
+    # For columns type
+    columns = blocks.ListBlock(
+        FooterColumnBlock(),
+        required=False,
+        help_text="Add footer columns (for 'Link Columns' type)"
+    )
+    
+    # For text type
+    content = blocks.RichTextBlock(
+        required=False,
+        help_text="Rich text content (for 'Text Content' type)"
+    )
+    
+    # For contact type
+    show_email = blocks.BooleanBlock(required=False, default=True)
+    show_phone = blocks.BooleanBlock(required=False, default=True)
+    show_address = blocks.BooleanBlock(required=False, default=True)
+    
+    class Meta:
+        label = "Footer Section"
+        icon = "form"
+

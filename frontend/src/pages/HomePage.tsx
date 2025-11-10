@@ -2,8 +2,13 @@ import NewHeroSection from '../components/Home/NewHeroSection';
 import BodyRenderer from '../components/BodyRenderer';
 import { useHome } from '../hooks/useHome';
 import { Preloader } from '../components/Layout';
+import { SiteSettings } from '../services/api';
 
-const HomePage = () => {
+interface HomePageProps {
+  settings: SiteSettings;
+}
+
+const HomePage: React.FC<HomePageProps> = ({ settings }) => {
   const { loading, bodyBlocks } = useHome();
 
   if (loading) {

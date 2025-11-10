@@ -14,20 +14,12 @@ interface MenuItem {
   subItems?: SubMenuItem[];
 }
 
-interface SocialItem {
-  label: string;
-  link: string;
-}
-
 interface StaggeredMenuProps {
   position?: 'left' | 'right';
   colors?: string[];
   items?: MenuItem[];
-  socialItems?: SocialItem[];
-  displaySocials?: boolean;
   displayItemNumbering?: boolean;
   className?: string;
-  logoUrl?: string;
   menuButtonColor?: string;
   openMenuButtonColor?: string;
   accentColor?: string;
@@ -41,11 +33,8 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   position = 'left',
   colors = ['#B19EEF', '#5227FF'],
   items = [],
-  socialItems = [],
-  displaySocials = true,
   displayItemNumbering = true,
   className,
-  logoUrl = '/src/assets/logos/reactbits-gh-white.svg',
   menuButtonColor = '#ffffff',
   openMenuButtonColor = '#fff',
   accentColor = '#5227FF',
@@ -79,7 +68,6 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
   const toggleBtnRef = useRef<HTMLButtonElement>(null);
   const busyRef = useRef(false);
   const itemEntranceTweenRef = useRef<gsap.core.Tween | null>(null);
-  const submenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
@@ -122,8 +110,6 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 
     const itemEls = Array.from(panel.querySelectorAll('.sm-panel-itemLabel'));
     const numberEls = Array.from(panel.querySelectorAll('.sm-panel-list[data-numbering] .sm-panel-item'));
-    const socialTitle = panel.querySelector('.sm-socials-title');
-    const socialLinks = Array.from(panel.querySelectorAll('.sm-socials-link'));
 
     const layerStates = layers.map(el => ({ el, start: Number(gsap.getProperty(el, 'xPercent')) }));
     const panelStart = Number(gsap.getProperty(panel, 'xPercent'));
@@ -133,12 +119,6 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     }
     if (numberEls.length) {
       gsap.set(numberEls, { '--sm-num-opacity': 0 });
-    }
-    if (socialTitle) {
-      gsap.set(socialTitle, { opacity: 0 });
-    }
-    if (socialLinks.length) {
-      gsap.set(socialLinks, { y: 25, opacity: 0 });
     }
 
     const tl = gsap.timeline({ paused: true });
@@ -180,37 +160,6 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
             stagger: { each: 0.08, from: 'start' }
           },
           itemsStart + 0.1
-        );
-      }
-    }
-
-    if (socialTitle || socialLinks.length) {
-      const socialsStart = panelInsertTime + panelDuration * 0.4;
-      if (socialTitle) {
-        tl.to(
-          socialTitle,
-          {
-            opacity: 1,
-            duration: 0.5,
-            ease: 'power2.out'
-          },
-          socialsStart
-        );
-      }
-      if (socialLinks.length) {
-        tl.to(
-          socialLinks,
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.55,
-            ease: 'power3.out',
-            stagger: { each: 0.08, from: 'start' },
-            onComplete: () => {
-              gsap.set(socialLinks, { clearProps: 'opacity' });
-            }
-          },
-          socialsStart + 0.04
         );
       }
     }
@@ -259,10 +208,6 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
         if (numberEls.length) {
           gsap.set(numberEls, { '--sm-num-opacity': 0 });
         }
-        const socialTitle = panel.querySelector('.sm-socials-title');
-        const socialLinks = Array.from(panel.querySelectorAll('.sm-socials-link'));
-        if (socialTitle) gsap.set(socialTitle, { opacity: 0 });
-        if (socialLinks.length) gsap.set(socialLinks, { y: 25, opacity: 0 });
         busyRef.current = false;
       }
     });

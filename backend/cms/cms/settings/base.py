@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "wagtail.api.v2",   
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
+    "wagtail.contrib.settings",  # For site-wide settings
     "wagtail.embeds",
     "wagtail.sites",
     "wagtail.users",

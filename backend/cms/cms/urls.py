@@ -15,6 +15,9 @@ from wagtail.api.v2.views import PagesAPIViewSet
 from wagtail.images.api.v2.views import ImagesAPIViewSet
 from wagtail.documents.api.v2.views import DocumentsAPIViewSet
 
+# Import custom API views
+from core.views import site_settings_api
+
 api_router = WagtailAPIRouter("wagtailapi")
 api_router.register_endpoint("pages", PagesAPIViewSet)
 api_router.register_endpoint("images", ImagesAPIViewSet)
@@ -27,6 +30,9 @@ urlpatterns = [
 
     # API root
     path("api/v2/", api_router.urls),
+    
+    # Custom API endpoints
+    path("api/v2/site-settings/", site_settings_api, name="site_settings_api"),
    
 
     # Wagtail page serving (keep this last)

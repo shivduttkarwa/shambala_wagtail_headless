@@ -270,3 +270,98 @@ class TimestampAbstract(models.Model):
 
     class Meta:
         abstract = True
+
+
+# Import required modules for settings
+from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
+from wagtail.fields import StreamField
+from core.blocks import NavigationBlock, FooterBlock
+
+
+@register_setting
+class SiteSettings(BaseSiteSetting):
+    """
+    Site-wide settings for Header and Footer content.
+    Editable from Wagtail admin sidebar under Settings > Site Settings.
+    """
+    
+    # Header/Navigation configuration
+    header_logo_text = models.CharField(
+        max_length=100,
+        default="SHAMBALA HOMES",
+        help_text="Text to display in the header logo"
+    )
+    
+    header_menu_items = StreamField(
+        [('menu_item', NavigationBlock())],
+        blank=True,
+        use_json_field=True,
+        help_text="Configure the main navigation menu items"
+    )
+    
+    # Footer configuration
+    footer_content = StreamField(
+        [('footer_section', FooterBlock())],
+        blank=True,
+        use_json_field=True,
+        help_text="Configure footer sections (columns, links, social media, etc.)"
+    )
+    
+    footer_copyright = RichTextField(
+        blank=True,
+        help_text="Copyright text displayed at the bottom of the footer"
+    )
+    
+    # Contact information
+    contact_email = models.EmailField(
+        blank=True,
+        help_text="Primary contact email"
+    )
+    
+    contact_phone = models.CharField(
+        max_length=20,
+        blank=True,
+        help_text="Primary contact phone number"
+    )
+    
+    contact_address = models.TextField(
+        blank=True,
+        help_text="Physical address"
+    )
+    
+    # Social media links
+    facebook_url = models.URLField(blank=True)
+    twitter_url = models.URLField(blank=True)
+    instagram_url = models.URLField(blank=True)
+    linkedin_url = models.URLField(blank=True)
+    youtube_url = models.URLField(blank=True)
+    
+    panels = [
+        MultiFieldPanel([
+            FieldPanel('header_logo_text'),
+            FieldPanel('header_menu_items'),
+        ], heading="Header Settings"),
+        
+        MultiFieldPanel([
+            FieldPanel('footer_content'),
+            FieldPanel('footer_copyright'),
+        ], heading="Footer Settings"),
+        
+        MultiFieldPanel([
+            FieldPanel('contact_email'),
+            FieldPanel('contact_phone'),
+            FieldPanel('contact_address'),
+        ], heading="Contact Information"),
+        
+        MultiFieldPanel([
+            FieldPanel('facebook_url'),
+            FieldPanel('twitter_url'),
+            FieldPanel('instagram_url'),
+            FieldPanel('linkedin_url'),
+            FieldPanel('youtube_url'),
+        ], heading="Social Media Links"),
+    ]
+    
+    class Meta:
+        verbose_name = "Site Settings"
+

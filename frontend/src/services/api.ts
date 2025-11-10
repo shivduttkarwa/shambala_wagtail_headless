@@ -306,6 +306,63 @@ export interface WagtailApiResponse<T> {
   items: T[];
 }
 
+// Site Settings Types
+export interface SiteSettings {
+  header: {
+    logo_text: string;
+    menu_items: Array<{
+      label: string;
+      aria_label: string;
+      link: string;
+      subItems?: Array<{
+        label: string;
+        link: string;
+      }>;
+    }>;
+  };
+  footer: {
+    sections: Array<{
+      type: 'columns' | 'text' | 'contact';
+      columns?: Array<{
+        heading: string;
+        links: Array<{
+          text: string;
+          link: string;
+        }>;
+      }>;
+      content?: string;
+      contact?: {
+        show_email: boolean;
+        show_phone: boolean;
+        show_address: boolean;
+        email: string;
+        phone: string;
+        address: string;
+      };
+    }>;
+    copyright: string;
+  };
+  contact: {
+    email: string;
+    phone: string;
+    address: string;
+  };
+  social: {
+    [key: string]: string;
+  };
+}
+
+// Fetch site settings (header/footer configuration)
+export const fetchSiteSettings = async (): Promise<SiteSettings> => {
+  try {
+    const response = await api.get<SiteSettings>('/site-settings/');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching site settings:', error);
+    throw error;
+  }
+};
+
 // Fetch home page data from Wagtail API
 export const fetchHomePage = async (): Promise<WagtailHomePage | null> => {
   try {
