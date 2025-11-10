@@ -13,6 +13,7 @@ const Header: React.FC = () => {
       ariaLabel: 'View house designs', 
       link: '/shambala_homes/house-designs',
       subItems: [
+        { label: 'All House Designs', link: '/shambala_homes/house-designs' },
         { label: 'Single Storey', link: '/shambala_homes/house-designs?storey=1' },
         { label: 'Double Storey', link: '/shambala_homes/house-designs?storey=2' },
         { label: 'Luxury Homes', link: '/shambala_homes/house-designs?category=luxury' },
@@ -24,6 +25,7 @@ const Header: React.FC = () => {
       ariaLabel: 'Learn about us', 
       link: '/shambala_homes/about',
       subItems: [
+        { label: 'About Us', link: '/shambala_homes/about' },
         { label: 'Our Story', link: '/shambala_homes/about/story' },
         { label: 'Our Team', link: '/shambala_homes/about/team' },
         { label: 'Testimonials', link: '/shambala_homes/about/testimonials' }
@@ -34,6 +36,7 @@ const Header: React.FC = () => {
       ariaLabel: 'View our services', 
       link: '/shambala_homes/services',
       subItems: [
+        { label: 'All Services', link: '/shambala_homes/services' },
         { label: 'Design & Build', link: '/shambala_homes/services/design-build' },
         { label: 'Renovations', link: '/shambala_homes/services/renovations' },
         { label: 'Custom Homes', link: '/shambala_homes/services/custom-homes' },
