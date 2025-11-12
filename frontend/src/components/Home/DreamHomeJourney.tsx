@@ -1,10 +1,7 @@
-import React from 'react';
-import './DreamHomeJourney.css';
-import LiquidTextAnimate from '../animations/LiquidTextAnimate';
-
+import React from "react";
+import "./DreamHomeJourney.css";
 
 const publicUrl = import.meta.env.BASE_URL;
-
 
 interface DreamHomeJourneyProps {
   title?: string;
@@ -25,33 +22,39 @@ const DreamHomeJourney: React.FC<DreamHomeJourneyProps> = ({
   description = "From concept to completion, we guide you through every step of creating your perfect living space. Our expert team combines innovative design with superior craftsmanship.",
   primaryCta = {
     text: "Start Your Journey",
-    link: "#"
+    link: "#",
   },
   secondaryCta = {
     text: "View Portfolio",
-    link: "#"
+    link: "#",
   },
-  backgroundImage = `${publicUrl}images/wooden-bg.jpg`
+  backgroundImage = `${publicUrl}images/wooden-bg.jpg`,
 }) => {
-
   return (
-    <section 
-      className="dream-journey" 
+    <section
+      className="dream-journey"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
       <div className="dream-overlay"></div>
       <div className="dream-container">
-        <h2 className="dream-title" style={{ textAlign: 'center', overflow: 'visible' }}>
-          <LiquidTextAnimate delay={0.3} duration={0.4}>
-            {title}
-          </LiquidTextAnimate>
+        <h2
+          className="dream-title"
+          style={{ textAlign: "center", overflow: "visible" }}
+        >
+          {title}
         </h2>
         <p className="dream-description">{description}</p>
         <div className="dream-ctas">
-          <a href={primaryCta.link} className="dream-button dream-button-primary">
+          <a
+            href={primaryCta.link}
+            className="dream-button dream-button-primary"
+          >
             {primaryCta.text}
           </a>
-          <a href={secondaryCta.link} className="dream-button dream-button-secondary">
+          <a
+            href={secondaryCta.link}
+            className="dream-button dream-button-secondary"
+          >
             {secondaryCta.text}
           </a>
         </div>

@@ -8,7 +8,7 @@ interface HomePageProps {
   settings: SiteSettings;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ settings }) => {
+const HomePage: React.FC<HomePageProps> = ({ settings: _ }) => {
   const { loading, bodyBlocks } = useHome();
 
   if (loading) {

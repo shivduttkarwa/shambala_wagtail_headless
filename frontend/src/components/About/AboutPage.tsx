@@ -1,9 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import './AboutPage.css';
-
-gsap.registerPlugin(ScrollTrigger);
+import React, { useEffect, useRef } from "react";
+import "./AboutPage.css";
 
 const AboutPage: React.FC = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -13,135 +9,68 @@ const AboutPage: React.FC = () => {
   const teamRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Hero animation
-    if (heroRef.current) {
-      gsap.from(heroRef.current.querySelectorAll('.hero-content > *'), {
-        y: 50,
-        opacity: 0,
-        duration: 1,
-        stagger: 0.2,
-        ease: 'power3.out',
-      });
-    }
-
-    // Story section animation
-    if (storyRef.current) {
-      gsap.from(storyRef.current.querySelectorAll('.story-content, .story-image'), {
-        scrollTrigger: {
-          trigger: storyRef.current,
-          start: 'top 80%',
-        },
-        y: 80,
-        opacity: 0,
-        duration: 1,
-        stagger: 0.3,
-        ease: 'power3.out',
-      });
-    }
-
-    // Values cards animation
-    if (valuesRef.current) {
-      gsap.from(valuesRef.current.querySelectorAll('.value-card'), {
-        scrollTrigger: {
-          trigger: valuesRef.current,
-          start: 'top 80%',
-        },
-        y: 60,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.2,
-        ease: 'power3.out',
-      });
-    }
-
-    // Stats counter animation
-    if (statsRef.current) {
-      const stats = statsRef.current.querySelectorAll('.stat-number');
-      stats.forEach((stat) => {
-        const target = parseInt(stat.getAttribute('data-target') || '0');
-        gsap.to(stat, {
-          scrollTrigger: {
-            trigger: statsRef.current,
-            start: 'top 80%',
-          },
-          innerText: target,
-          duration: 2,
-          snap: { innerText: 1 },
-          ease: 'power2.out',
-        });
-      });
-    }
-
-    // Team cards animation
-    if (teamRef.current) {
-      gsap.from(teamRef.current.querySelectorAll('.team-member'), {
-        scrollTrigger: {
-          trigger: teamRef.current,
-          start: 'top 80%',
-        },
-        scale: 0.9,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.15,
-        ease: 'back.out(1.2)',
-      });
-    }
+    // Simplified version without GSAP animations
+    console.log("AboutPage initialized");
   }, []);
 
   const values = [
     {
-      icon: '🏆',
-      title: 'Excellence',
-      description: 'We strive for perfection in every detail of our work, ensuring the highest quality standards.',
+      icon: "🏆",
+      title: "Excellence",
+      description:
+        "We strive for perfection in every detail of our work, ensuring the highest quality standards.",
     },
     {
-      icon: '🤝',
-      title: 'Integrity',
-      description: 'Honesty and transparency guide our relationships with clients, partners, and team members.',
+      icon: "🤝",
+      title: "Integrity",
+      description:
+        "Honesty and transparency guide our relationships with clients, partners, and team members.",
     },
     {
-      icon: '💡',
-      title: 'Innovation',
-      description: 'We embrace new technologies and creative solutions to build homes of the future.',
+      icon: "💡",
+      title: "Innovation",
+      description:
+        "We embrace new technologies and creative solutions to build homes of the future.",
     },
     {
-      icon: '🌱',
-      title: 'Sustainability',
-      description: 'Environmental responsibility is at the core of our design and construction processes.',
+      icon: "🌱",
+      title: "Sustainability",
+      description:
+        "Environmental responsibility is at the core of our design and construction processes.",
     },
   ];
 
   const stats = [
-    { number: 500, label: 'Homes Built', suffix: '+' },
-    { number: 25, label: 'Years Experience', suffix: '+' },
-    { number: 98, label: 'Client Satisfaction', suffix: '%' },
-    { number: 50, label: 'Team Members', suffix: '+' },
+    { number: 500, label: "Homes Built", suffix: "+" },
+    { number: 25, label: "Years Experience", suffix: "+" },
+    { number: 98, label: "Client Satisfaction", suffix: "%" },
+    { number: 50, label: "Team Members", suffix: "+" },
   ];
 
   const team = [
     {
-      name: 'John Anderson',
-      role: 'Founder & CEO',
-      image: '/images/team/team-1.jpg',
-      bio: 'Visionary leader with 30 years in construction',
+      name: "John Anderson",
+      role: "Founder & CEO",
+      image: "/images/team/team-1.jpg",
+      bio: "Visionary leader with 30 years in construction",
     },
     {
-      name: 'Sarah Mitchell',
-      role: 'Head of Design',
-      image: '/images/team/team-2.jpg',
-      bio: 'Award-winning architect passionate about sustainable design',
+      name: "Sarah Mitchell",
+      role: "Head of Design",
+      image: "/images/team/team-2.jpg",
+      bio: "Award-winning architect passionate about sustainable design",
     },
     {
-      name: 'Michael Chen',
-      role: 'Construction Manager',
-      image: '/images/team/team-3.jpg',
-      bio: 'Expert in project management and quality control',
+      name: "Michael Chen",
+      role: "Construction Manager",
+      image: "/images/team/team-3.jpg",
+      bio: "Expert in project management and quality control",
     },
     {
-      name: 'Emily Rodriguez',
-      role: 'Client Relations',
-      image: '/images/team/team-4.jpg',
-      bio: 'Dedicated to creating exceptional client experiences',
+      name: "Emily Rodriguez",
+      role: "Client Relations",
+      image: "/images/team/team-4.jpg",
+      bio: "Dedicated to creating exceptional client experiences",
     },
   ];
 
@@ -154,8 +83,9 @@ const AboutPage: React.FC = () => {
           <span className="hero-tag">About Shambala Homes</span>
           <h1>Building Dreams, Creating Homes</h1>
           <p className="hero-subtitle">
-            For over 25 years, we've been crafting exceptional living spaces that blend innovative design,
-            superior craftsmanship, and sustainable building practices.
+            For over 25 years, we've been crafting exceptional living spaces
+            that blend innovative design, superior craftsmanship, and
+            sustainable building practices.
           </p>
         </div>
         <div className="hero-scroll-indicator">
@@ -173,19 +103,23 @@ const AboutPage: React.FC = () => {
               <h2>A Legacy of Excellence</h2>
               <div className="story-text">
                 <p>
-                  Founded in 1998, Shambala Homes began with a simple vision: to create homes that inspire
-                  and endure. What started as a small family business has grown into one of the region's
-                  most trusted home builders.
+                  Founded in 1998, Shambala Homes began with a simple vision: to
+                  create homes that inspire and endure. What started as a small
+                  family business has grown into one of the region's most
+                  trusted home builders.
                 </p>
                 <p>
-                  Our founder, John Anderson, brought decades of construction expertise and a passion for
-                  quality craftsmanship. His commitment to excellence and client satisfaction laid the
+                  Our founder, John Anderson, brought decades of construction
+                  expertise and a passion for quality craftsmanship. His
+                  commitment to excellence and client satisfaction laid the
                   foundation for everything we do today.
                 </p>
                 <p>
-                  Today, we're proud to have built over 500 homes, each one a testament to our dedication
-                  to quality, innovation, and sustainable building practices. Our team has grown, but our
-                  values remain the same: integrity, excellence, and a genuine care for our clients' dreams.
+                  Today, we're proud to have built over 500 homes, each one a
+                  testament to our dedication to quality, innovation, and
+                  sustainable building practices. Our team has grown, but our
+                  values remain the same: integrity, excellence, and a genuine
+                  care for our clients' dreams.
                 </p>
               </div>
               <div className="story-signature">
@@ -231,7 +165,8 @@ const AboutPage: React.FC = () => {
             <span className="section-tag">Our Values</span>
             <h2>What Drives Us</h2>
             <p className="section-subtitle">
-              Our core values guide every decision we make and every home we build
+              Our core values guide every decision we make and every home we
+              build
             </p>
           </div>
           <div className="values-grid">
@@ -285,7 +220,10 @@ const AboutPage: React.FC = () => {
               <a href="/shambala_homes/contact" className="btn btn-primary">
                 Get in Touch
               </a>
-              <a href="/shambala_homes/house-designs" className="btn btn-secondary">
+              <a
+                href="/shambala_homes/house-designs"
+                className="btn btn-secondary"
+              >
                 View Our Designs
               </a>
             </div>

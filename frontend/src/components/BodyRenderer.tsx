@@ -1,22 +1,16 @@
-import React from 'react';
-import { BodyBlock, HorizontalSliderBlock, ResidentialProjectsBlock, CommercialProjectsBlock, MultiImageContentBlock, QualityHomesBlock, DreamHomeJourneyBlock, BlogSectionBlock } from '../services/api';
-import { MediaComparator, QualityHomes, DreamHomeJourney, BlogSection } from './Home';
-import StudioSection from './Home/StudioSection';
+import React from "react";
+import {
+  BodyBlock,
+  MultiImageContentBlock,
+  QualityHomesBlock,
+  DreamHomeJourneyBlock,
+  BlogSectionBlock,
+} from "../services/api";
+import { QualityHomes, DreamHomeJourney, BlogSection } from "./Home";
+import StudioSection from "./Home/StudioSection";
 
 interface BodyRendererProps {
   blocks: BodyBlock[];
-}
-
-
-interface MediaComparatorData {
-  id: string;
-  title?: string;
-  slides: Array<{
-    image: string;
-    title: string;
-    subtitle: string;
-  }>;
-  direction: 'rtl' | 'ltr';
 }
 
 const BodyRenderer: React.FC<BodyRendererProps> = ({ blocks }) => {
@@ -27,149 +21,27 @@ const BodyRenderer: React.FC<BodyRendererProps> = ({ blocks }) => {
 
   const renderBlock = (block: BodyBlock, index: number) => {
     console.log(`Rendering block ${index}:`, block);
-    
+
     switch (block.type) {
-      case 'horizontal_slider':
-        return renderHorizontalSliderBlock(block);
-      case 'residential_projects':
-        return renderResidentialProjectsBlock(block);
-      case 'commercial_projects':
-        return renderCommercialProjectsBlock(block);
-      case 'multi_image_content':
+      case "multi_image_content":
         return renderMultiImageContentBlock(block);
-      case 'quality_homes':
+      case "quality_homes":
         return renderQualityHomesBlock(block);
-      case 'dream_home_journey':
+      case "dream_home_journey":
         return renderDreamHomeJourneyBlock(block);
-      case 'blog_section':
+      case "blog_section":
         return renderBlogSectionBlock(block);
       default:
-        console.warn('Unknown block type:', (block as any).type);
+        console.warn("Unknown block type:", (block as any).type);
         return null;
     }
   };
 
-
-  const renderHorizontalSliderBlock = (block: HorizontalSliderBlock) => {
-    const { value } = block;
-    const API_BASE = import.meta.env.VITE_API_URL?.replace('/api/v2', '') || 'http://127.0.0.1:8000';
-    
-    // Transform Wagtail data to MediaComparator props
-    const comparatorData: MediaComparatorData = {
-      id: `horizontal_slider_${block.id}`,
-      title: value.title,
-      direction: 'rtl', // Can be made configurable in the block if needed
-      slides: value.slides
-        .sort((a, b) => parseInt(a.order || '0') - parseInt(b.order || '0')) // Sort by order
-        .map((slide) => ({
-          title: slide.title || '',
-          subtitle: slide.description || '',
-          image: slide.image?.desktop ? 
-            (slide.image.desktop.startsWith('http') ? slide.image.desktop : `${API_BASE}${slide.image.desktop}`) :
-            `${import.meta.env.BASE_URL || '/'}images/placeholder.jpg`
-        }))
-    };
-
-    return (
-      <MediaComparator
-        key={block.id}
-        id={comparatorData.id}
-        title={comparatorData.title}
-        slides={comparatorData.slides}
-        direction={comparatorData.direction}
-        showComparatorLine={true}
-        showOverlayAnimation={true}
-      />
-    );
-  };
-
-  const renderResidentialProjectsBlock = (block: ResidentialProjectsBlock) => {
-    const { value } = block;
-    const API_BASE = import.meta.env.VITE_API_URL?.replace('/api/v2', '') || 'http://127.0.0.1:8000';
-    
-    // Transform Wagtail data to MediaComparator props
-    const slides = value.projects.map((project) => {
-      console.log('Processing residential project:', project);
-      console.log('Project image:', project.image);
-      
-      let imageUrl = `${import.meta.env.BASE_URL || '/'}images/placeholder.jpg`;
-      
-      if (project.image?.desktop) {
-        if (project.image.desktop.startsWith('http')) {
-          imageUrl = project.image.desktop;
-        } else if (project.image.desktop.startsWith('/')) {
-          imageUrl = `${API_BASE}${project.image.desktop}`;
-        } else {
-          imageUrl = `${API_BASE}/${project.image.desktop}`;
-        }
-        console.log('Final residential image URL:', imageUrl);
-      }
-      
-      return {
-        title: project.title || '',
-        subtitle: project.description || '',
-        image: imageUrl,
-        buttonText: project.button_text,
-        buttonUrl: project.is_external_link ? project.external_url : project.page_link?.url
-      };
-    });
-
-    console.log('Rendering MediaComparator with props:', {
-      id: "residential_projects_comparator",
-      title: value.title,
-      subtitle: value.subtitle,
-      slidesCount: slides.length,
-      direction: "rtl"
-    });
-
-    return (
-      <MediaComparator
-        key={block.id}
-        id="residential_projects_comparator"
-        title={value.title}
-        subtitle={value.subtitle}
-        slides={slides}
-        direction="rtl"
-        showComparatorLine={true}
-        showOverlayAnimation={true}
-      />
-    );
-  };
-
-  const renderCommercialProjectsBlock = (block: CommercialProjectsBlock) => {
-    const { value } = block;
-    const API_BASE = import.meta.env.VITE_API_URL?.replace('/api/v2', '') || 'http://127.0.0.1:8000';
-    
-    // Transform Wagtail data to MediaComparator props
-    const slides = value.projects.map((project) => ({
-      title: project.title || '',
-      subtitle: project.description || '',
-      image: project.image?.desktop ? 
-        (project.image.desktop.startsWith('http') ? project.image.desktop : `${API_BASE}${project.image.desktop}`) :
-        `${import.meta.env.BASE_URL || '/'}images/placeholder.jpg`,
-      buttonText: project.button_text,
-      buttonUrl: project.is_external_link ? project.external_url : project.page_link?.url
-    }));
-
-    return (
-      <MediaComparator
-        key={block.id}
-        id="commercial_projects_comparator"
-        title={value.title}
-        subtitle={value.subtitle}
-        slides={slides}
-        direction="ltr"
-        showComparatorLine={true}
-        showOverlayAnimation={true}
-      />
-    );
-  };
-
   const renderMultiImageContentBlock = (block: MultiImageContentBlock) => {
     const { value } = block;
-    
+
     // Transform CTA data for StudioSection
-    let ctaHref = '#contact';
+    let ctaHref = "#contact";
     if (value.cta) {
       if (value.cta.is_external_link && value.cta.external_url) {
         ctaHref = value.cta.external_url;
@@ -179,18 +51,24 @@ const BodyRenderer: React.FC<BodyRendererProps> = ({ blocks }) => {
     }
 
     // Update StudioSection to accept cta props by passing the button text and href
-    const updatedImages = value.images.length >= 2 ? value.images : [
-      ...value.images,
-      // Add default image if only one image provided
-      { src: `${import.meta.env.BASE_URL || '/'}images/placeholder.jpg`, alt: 'Placeholder' }
-    ];
+    const updatedImages =
+      value.images.length >= 2
+        ? value.images
+        : [
+            ...value.images,
+            // Add default image if only one image provided
+            {
+              src: `${import.meta.env.BASE_URL || "/"}images/placeholder.jpg`,
+              alt: "Placeholder",
+            },
+          ];
 
-    console.log('Rendering MultiImageContentBlock:', {
+    console.log("Rendering MultiImageContentBlock:", {
       title: value.title,
       subtitle: value.subtitle,
       description: value.description,
       images: updatedImages,
-      cta: value.cta
+      cta: value.cta,
     });
 
     return (
@@ -208,22 +86,26 @@ const BodyRenderer: React.FC<BodyRendererProps> = ({ blocks }) => {
 
   const renderQualityHomesBlock = (block: QualityHomesBlock) => {
     const { value } = block;
-    const API_BASE = import.meta.env.VITE_API_URL?.replace('/api/v2', '') || 'http://127.0.0.1:8000';
-    
+    const API_BASE =
+      import.meta.env.VITE_API_URL?.replace("/api/v2", "") ||
+      "http://127.0.0.1:8000";
+
     // Transform Wagtail data to QualityHomes component props
     const features = value.features.map((feature) => ({
       icon: feature.icon,
       title: feature.title,
       description: feature.description,
-      image: feature.image?.src ? 
-        (feature.image.src.startsWith('http') ? feature.image.src : `${API_BASE}${feature.image.src}`) :
-        `${import.meta.env.BASE_URL || '/'}images/placeholder.jpg`
+      image: feature.image?.src
+        ? feature.image.src.startsWith("http")
+          ? feature.image.src
+          : `${API_BASE}${feature.image.src}`
+        : `${import.meta.env.BASE_URL || "/"}images/placeholder.jpg`,
     }));
 
     // Transform CTA data
     let ctaText = undefined;
-    let ctaLink = '#';
-    
+    let ctaLink = "#";
+
     if (value.cta) {
       ctaText = value.cta.button_text;
       if (value.cta.is_external_link && value.cta.external_url) {
@@ -233,10 +115,10 @@ const BodyRenderer: React.FC<BodyRendererProps> = ({ blocks }) => {
       }
     }
 
-    console.log('Rendering QualityHomesBlock:', {
+    console.log("Rendering QualityHomesBlock:", {
       mainTitle: value.main_title,
       featuresCount: features.length,
-      cta: value.cta
+      cta: value.cta,
     });
 
     return (
@@ -252,43 +134,59 @@ const BodyRenderer: React.FC<BodyRendererProps> = ({ blocks }) => {
 
   const renderDreamHomeJourneyBlock = (block: DreamHomeJourneyBlock) => {
     const { value } = block;
-    const API_BASE = import.meta.env.VITE_API_URL?.replace('/api/v2', '') || 'http://127.0.0.1:8000';
-    
+    const API_BASE =
+      import.meta.env.VITE_API_URL?.replace("/api/v2", "") ||
+      "http://127.0.0.1:8000";
+
     // Transform primary CTA data
     let primaryCta = {
-      text: 'Explore designs',
-      link: '#'
+      text: "Explore designs",
+      link: "#",
     };
-    
+
     if (value.primary_cta) {
       primaryCta.text = value.primary_cta.button_text;
-      if (value.primary_cta.is_external_link && value.primary_cta.external_url) {
+      if (
+        value.primary_cta.is_external_link &&
+        value.primary_cta.external_url
+      ) {
         primaryCta.link = value.primary_cta.external_url;
-      } else if (!value.primary_cta.is_external_link && value.primary_cta.page_link?.url) {
+      } else if (
+        !value.primary_cta.is_external_link &&
+        value.primary_cta.page_link?.url
+      ) {
         primaryCta.link = value.primary_cta.page_link.url;
       }
     }
 
     // Transform secondary CTA data
     let secondaryCta = {
-      text: 'Explore house & land packages',
-      link: '#'
+      text: "Explore house & land packages",
+      link: "#",
     };
-    
+
     if (value.secondary_cta) {
       secondaryCta.text = value.secondary_cta.button_text;
-      if (value.secondary_cta.is_external_link && value.secondary_cta.external_url) {
+      if (
+        value.secondary_cta.is_external_link &&
+        value.secondary_cta.external_url
+      ) {
         secondaryCta.link = value.secondary_cta.external_url;
-      } else if (!value.secondary_cta.is_external_link && value.secondary_cta.page_link?.url) {
+      } else if (
+        !value.secondary_cta.is_external_link &&
+        value.secondary_cta.page_link?.url
+      ) {
         secondaryCta.link = value.secondary_cta.page_link.url;
       }
     }
 
     // Transform background image URL
-    let backgroundImage = `${import.meta.env.BASE_URL || '/'}images/wooden-bg.jpg`;
+    let backgroundImage = `${
+      import.meta.env.BASE_URL || "/"
+    }images/wooden-bg.jpg`;
     if (value.background_image?.src) {
-      backgroundImage = value.background_image.src.startsWith('http') 
-        ? value.background_image.src 
+      backgroundImage = value.background_image.src.startsWith("http")
+        ? value.background_image.src
         : `${API_BASE}${value.background_image.src}`;
     }
 
@@ -306,29 +204,31 @@ const BodyRenderer: React.FC<BodyRendererProps> = ({ blocks }) => {
 
   const renderBlogSectionBlock = (block: BlogSectionBlock) => {
     const { value } = block;
-    const API_BASE = import.meta.env.VITE_API_URL?.replace('/api/v2', '') || 'http://127.0.0.1:8000';
-    
+    const API_BASE =
+      import.meta.env.VITE_API_URL?.replace("/api/v2", "") ||
+      "http://127.0.0.1:8000";
+
     // Transform blog posts data - ensure image URLs are absolute
     const transformedPosts = value.posts.map((post) => ({
       ...post,
-      imageSrc: post.imageSrc?.startsWith('http') 
-        ? post.imageSrc 
+      imageSrc: post.imageSrc?.startsWith("http")
+        ? post.imageSrc
         : `${API_BASE}${post.imageSrc}`,
       // Handle additional image for featured posts
       ...(post.additional_image && {
         additional_image: {
-          src: post.additional_image.src?.startsWith('http') 
-            ? post.additional_image.src 
+          src: post.additional_image.src?.startsWith("http")
+            ? post.additional_image.src
             : `${API_BASE}${post.additional_image.src}`,
-          alt: post.additional_image.alt
-        }
-      })
+          alt: post.additional_image.alt,
+        },
+      }),
     }));
 
     // Transform CTA data
     let ctaText = undefined;
-    let ctaLink = '#';
-    
+    let ctaLink = "#";
+
     if (value.cta) {
       ctaText = value.cta.text;
       ctaLink = value.cta.link;
