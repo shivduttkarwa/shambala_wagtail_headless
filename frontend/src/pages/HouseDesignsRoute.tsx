@@ -1,13 +1,8 @@
 import { HouseDesignsPage } from '../components/HouseDesigns';
 import { useHouseDesigns } from '../hooks/useHouseDesigns';
-import { Preloader } from '../components/Layout';
 
 const HouseDesignsRoute = () => {
-  const { loading, error, pageData } = useHouseDesigns();
-
-  if (loading) {
-    return <Preloader />;
-  }
+  const { error, pageData } = useHouseDesigns();
 
   if (error) {
     return (

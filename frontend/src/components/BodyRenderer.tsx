@@ -19,9 +19,7 @@ const BodyRenderer: React.FC<BodyRendererProps> = ({ blocks }) => {
     return null;
   }
 
-  const renderBlock = (block: BodyBlock, index: number) => {
-    console.log(`Rendering block ${index}:`, block);
-
+  const renderBlock = (block: BodyBlock) => {
     switch (block.type) {
       case "multi_image_content":
         return renderMultiImageContentBlock(block);
@@ -32,7 +30,6 @@ const BodyRenderer: React.FC<BodyRendererProps> = ({ blocks }) => {
       case "blog_section":
         return renderBlogSectionBlock(block);
       default:
-        console.warn("Unknown block type:", (block as any).type);
         return null;
     }
   };
@@ -63,13 +60,6 @@ const BodyRenderer: React.FC<BodyRendererProps> = ({ blocks }) => {
             },
           ];
 
-    console.log("Rendering MultiImageContentBlock:", {
-      title: value.title,
-      subtitle: value.subtitle,
-      description: value.description,
-      images: updatedImages,
-      cta: value.cta,
-    });
 
     return (
       <StudioSection
@@ -115,11 +105,6 @@ const BodyRenderer: React.FC<BodyRendererProps> = ({ blocks }) => {
       }
     }
 
-    console.log("Rendering QualityHomesBlock:", {
-      mainTitle: value.main_title,
-      featuresCount: features.length,
-      cta: value.cta,
-    });
 
     return (
       <QualityHomes
@@ -247,7 +232,7 @@ const BodyRenderer: React.FC<BodyRendererProps> = ({ blocks }) => {
 
   return (
     <div className="body-content" style={{ margin: 0, padding: 0 }}>
-      {blocks.map((block, index) => renderBlock(block, index))}
+      {blocks.map((block, index) => <div key={index}>{renderBlock(block)}</div>)}
     </div>
   );
 };

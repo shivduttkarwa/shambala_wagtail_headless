@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import "./AboutPage.css";
 
 const AboutPage: React.FC = () => {
@@ -8,10 +8,6 @@ const AboutPage: React.FC = () => {
   const statsRef = useRef<HTMLDivElement>(null);
   const teamRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    // Simplified version without GSAP animations
-    console.log("AboutPage initialized");
-  }, []);
 
   const values = [
     {

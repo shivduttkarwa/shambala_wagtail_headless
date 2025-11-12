@@ -1,17 +1,12 @@
 import './styles/App.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Header, Footer, Preloader } from './components/Layout';
+import { Header, Footer } from './components/Layout';
 import HomePage from './pages/HomePage';
 import HouseDesignsRoute from './pages/HouseDesignsRoute';
 import { useSiteSettings } from './hooks/useSiteSettings';
 
 function App() {
-  const { loading: settingsLoading, settings } = useSiteSettings();
-
-  // Show preloader while site settings are loading
-  if (settingsLoading || !settings) {
-    return <Preloader />;
-  }
+  const { settings } = useSiteSettings();
 
   return (
     <Router basename="/shambala_homes">

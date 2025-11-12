@@ -31,15 +31,14 @@ class HeroErrorBoundary extends Component<
     return { hasError: true };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.warn("Hero section error caught:", error, errorInfo);
+  componentDidCatch() {
   }
 
   render() {
     if (this.state.hasError) {
       return (
         <section className="hero-section">
-          <div className="hero-loading">Loading hero content...</div>
+          <div>Error loading hero content</div>
         </section>
       );
     }
@@ -51,12 +50,12 @@ class HeroErrorBoundary extends Component<
 const NewHeroSectionContent: React.FC = () => {
   const heroSectionRef = useRef<HTMLElement | null>(null);
   const swiperRef = useRef<Swiper | null>(null);
-  const { loading, heroData } = useNewHero();
+  const { heroData } = useNewHero();
   // Fullscreen functionality removed for simplicity
 
   useEffect(() => {
-    // Skip if still loading data
-    if (loading || !heroData) return;
+    // Skip if no data
+    if (!heroData) return;
 
     let isComponentMounted = true;
 
@@ -67,7 +66,6 @@ const NewHeroSectionContent: React.FC = () => {
           "#new-hero-section .video-poster"
         );
         if (poster && (poster as HTMLElement).style.opacity !== "0") {
-          console.log("Fallback: hiding poster after max wait time");
           (poster as HTMLElement).style.opacity = "0";
         }
       }
@@ -80,24 +78,14 @@ const NewHeroSectionContent: React.FC = () => {
       const swiperElement = document.querySelector(
         "#new-hero-section .heroSwiper"
       );
-      const nextEl = document.querySelector("#new-hero-section #rs-next");
-      const prevEl = document.querySelector("#new-hero-section #rs-prev");
 
-      console.log("Swiper init check:", {
-        swiperElement,
-        nextEl,
-        prevEl,
-        existing: swiperRef.current,
-      });
 
       if (!swiperElement || swiperRef.current) return;
 
       // Check if we have slides
       const slides = swiperElement.querySelectorAll(".swiper-slide");
-      console.log("Found slides:", slides.length);
 
       if (slides.length === 0) {
-        console.warn("No slides found for Swiper");
         return;
       }
 
@@ -140,14 +128,11 @@ const NewHeroSectionContent: React.FC = () => {
                 });
             },
             init() {
-              console.log("Swiper initialized successfully");
             },
           },
         });
 
-        console.log("Swiper created:", swiperRef.current);
       } catch (error) {
-        console.error("Swiper initialization failed:", error);
       }
     };
 
@@ -167,19 +152,10 @@ const NewHeroSectionContent: React.FC = () => {
           swiperRef.current.destroy(true, true);
           swiperRef.current = null;
         } catch (error) {
-          console.warn("Swiper cleanup failed:", error);
         }
       }
     };
-  }, [loading, heroData]);
-
-  if (loading) {
-    return (
-      <section className="hero-section">
-        <div className="hero-loading">Loading...</div>
-      </section>
-    );
-  }
+  }, [heroData]);
 
   return (
     <>

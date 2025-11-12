@@ -3,12 +3,12 @@ import { StaggeredMenu } from './StaggeredMenu';
 import { SiteSettings } from '../../services/api';
 
 interface HeaderProps {
-  settings: SiteSettings;
+  settings: SiteSettings | null;
 }
 
 const Header: React.FC<HeaderProps> = ({ settings }) => {
   // Transform settings from Wagtail API to StaggeredMenu format
-  const menuItems = settings?.header?.menu_items?.length > 0 
+  const menuItems = settings?.header?.menu_items?.length
     ? settings.header.menu_items.map(item => ({
         label: item.label,
         ariaLabel: item.aria_label,
@@ -78,8 +78,8 @@ const Header: React.FC<HeaderProps> = ({ settings }) => {
       colors={['#5B7C4F', '#2C2C2C']}
       accentColor="#5B7C4F"
       isFixed={true}
-      onMenuOpen={() => console.log('Menu opened')}
-      onMenuClose={() => console.log('Menu closed')}
+      onMenuOpen={() => {}}
+      onMenuClose={() => {}}
     />
   );
 };

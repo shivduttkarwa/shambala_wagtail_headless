@@ -358,7 +358,6 @@ export const fetchSiteSettings = async (): Promise<SiteSettings> => {
     const response = await api.get<SiteSettings>('/site-settings/');
     return response.data;
   } catch (error) {
-    console.error('Error fetching site settings:', error);
     throw error;
   }
 };
@@ -380,7 +379,6 @@ export const fetchHomePage = async (): Promise<WagtailHomePage | null> => {
     
     return null;
   } catch (error) {
-    console.error('Error fetching home page:', error);
     throw error;
   }
 };

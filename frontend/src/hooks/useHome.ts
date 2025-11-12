@@ -50,11 +50,9 @@ export const useNewHero = (): UseNewHeroReturn => {
         if (data && data.hero_section_data) {
           setHeroData(data.hero_section_data);
         } else {
-          console.warn('No hero section data found, using fallback');
           throw new Error('No hero section data found');
         }
       } catch (err) {
-        console.error('Failed to load hero section data:', err);
         setError(err instanceof Error ? err.message : 'Failed to load hero section data');
         
         // Provide fallback data when API is not available
@@ -164,7 +162,6 @@ export const useHome = (): UseHomeReturn => {
           if (Array.isArray(data.body_content_data)) {
             setBodyBlocks(data.body_content_data);
           } else {
-            console.warn('Body content data is not an array:', data.body_content_data);
             setBodyBlocks([]);
           }
           
@@ -192,7 +189,6 @@ export const useHome = (): UseHomeReturn => {
           setHeroProps(transformedProps);
         }
       } catch (err) {
-        console.error('Failed to load home page data:', err);
         setError(err instanceof Error ? err.message : 'Failed to load home page data');
         
         // Provide fallback data when API is not available

@@ -20,7 +20,6 @@ export const useSiteSettings = (): UseSiteSettingsReturn => {
         const data = await fetchSiteSettings();
         setSettings(data);
       } catch (err) {
-        console.error('Failed to load site settings:', err);
         setError(err instanceof Error ? err.message : 'Failed to load settings');
         
         // Provide fallback settings

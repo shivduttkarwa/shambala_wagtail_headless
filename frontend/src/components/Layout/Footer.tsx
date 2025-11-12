@@ -3,7 +3,7 @@ import './Footer.css';
 import { SiteSettings } from '../../services/api';
 
 interface FooterProps {
-  settings: SiteSettings;
+  settings: SiteSettings | null;
 }
 
 const Footer: React.FC<FooterProps> = ({ settings }) => {
