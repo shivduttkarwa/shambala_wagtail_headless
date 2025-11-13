@@ -35,23 +35,26 @@ const OurVisionSection: React.FC<OurVisionSectionProps> = ({
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: "top 80%", // when top of section hits 80% of viewport
-          end: "bottom top", // until bottom of section hits top of viewport
-          scrub: true, // smooth scrubbing
+          start: "top top", // pin as soon as section hits top of viewport
+          end: "+=60%", // control how long the scroll is "stuck" here
+          scrub: true,
+          pin: true, // <<< this pauses normal page scroll on this section
+          pinSpacing: true,
+          anticipatePin: 1,
         },
       });
 
       tl.to(
         ".vision-image-container",
         {
-          scale: 2, // 2X image size
+          scale: 1.3, // 2X image size
           ease: "none",
         },
         0
       ).to(
         ".vision-text-right .vision-large-text",
         {
-          y: -900, // move VISION up by 200px
+          y: -450, // your existing value
           ease: "none",
         },
         0
