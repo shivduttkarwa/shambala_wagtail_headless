@@ -6,8 +6,9 @@ import {
   DreamHomeJourneyBlock,
   BlogSectionBlock,
 } from "../services/api";
-import { QualityHomes, DreamHomeJourney, BlogSection } from "./Home";
+import { DreamHomeJourney, BlogSection } from "./Home";
 import StudioSection from "./Home/StudioSection";
+import OurVisionSection from "./Home/OurVisionSection";
 
 interface BodyRendererProps {
   blocks: BodyBlock[];
@@ -20,6 +21,7 @@ const BodyRenderer: React.FC<BodyRendererProps> = ({ blocks }) => {
   }
 
   const renderBlock = (block: BodyBlock) => {
+    console.log('Rendering block type:', block.type, block);
     switch (block.type) {
       case "multi_image_content":
         return renderMultiImageContentBlock(block);
@@ -30,6 +32,7 @@ const BodyRenderer: React.FC<BodyRendererProps> = ({ blocks }) => {
       case "blog_section":
         return renderBlogSectionBlock(block);
       default:
+        console.log('Unknown block type:', block.type);
         return null;
     }
   };
@@ -80,39 +83,26 @@ const BodyRenderer: React.FC<BodyRendererProps> = ({ blocks }) => {
       import.meta.env.VITE_API_URL?.replace("/api/v2", "") ||
       "http://127.0.0.1:8000";
 
-    // Transform Wagtail data to QualityHomes component props
-    const features = value.features.map((feature) => ({
-      icon: feature.icon,
-      title: feature.title,
-      description: feature.description,
-      image: feature.image?.src
-        ? feature.image.src.startsWith("http")
-          ? feature.image.src
-          : `${API_BASE}${feature.image.src}`
-        : `${import.meta.env.BASE_URL || "/"}images/placeholder.jpg`,
-    }));
+    // Use the first feature image if available, otherwise use a default
+    let centerImage = {
+      src: `${import.meta.env.BASE_URL || "/"}images/l2.jpg`,
+      alt: "Our approach image",
+      overlayText: "Our approach",
+    };
 
-    // Transform CTA data
-    let ctaText = undefined;
-    let ctaLink = "#";
-
-    if (value.cta) {
-      ctaText = value.cta.button_text;
-      if (value.cta.is_external_link && value.cta.external_url) {
-        ctaLink = value.cta.external_url;
-      } else if (!value.cta.is_external_link && value.cta.page_link?.url) {
-        ctaLink = value.cta.page_link.url;
-      }
+    if (value.features && value.features.length > 0 && value.features[0].image?.src) {
+      centerImage.src = value.features[0].image.src.startsWith("http")
+        ? value.features[0].image.src
+        : `${API_BASE}${value.features[0].image.src}`;
+      centerImage.alt = value.features[0].image.alt || "Our approach image";
     }
 
-
     return (
-      <QualityHomes
+      <OurVisionSection
         key={block.id}
-        mainTitle={value.main_title}
-        features={features}
-        ctaText={ctaText}
-        ctaLink={ctaLink}
+        leftText="Our"
+        rightText="Vision"
+        centerImage={centerImage}
       />
     );
   };

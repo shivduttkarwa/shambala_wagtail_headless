@@ -44,40 +44,31 @@ const StudioSection: React.FC<StudioSectionProps> = ({
   ctaHref = "#contact",
 }) => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const leftImageOverlayRef = useRef<HTMLDivElement>(null);
-  const rightImageOverlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!sectionRef.current) return;
 
     const ctx = gsap.context(() => {
-      // Left image reveal animation
-      if (leftImageOverlayRef.current) {
-        gsap.to(leftImageOverlayRef.current, {
-          scaleX: 0,
+      // Image grows from bottom-left corner to full
+      gsap.fromTo(
+        ".reveal-img",
+        {
+          scale: 0,
+          opacity: 0,
+          transformOrigin: "0% 100%", // bottom-left
+        },
+        {
+          scale: 1,
+          opacity: 1,
           duration: 1.4,
-          ease: "expo.inOut",
+          ease: "power0.none",
           scrollTrigger: {
-            trigger: leftImageOverlayRef.current,
-            start: "top 70%",
-            toggleActions: "play none none none",
+            trigger: ".studio-layout",
+            start: "top 50%", // when main section hits 90% of viewport height
+            toggleActions: "play none none reverse",
           },
-        });
-      }
-
-      // Right image reveal animation
-      if (rightImageOverlayRef.current) {
-        gsap.to(rightImageOverlayRef.current, {
-          scaleX: 0,
-          duration: 1.4,
-          ease: "expo.inOut",
-          scrollTrigger: {
-            trigger: rightImageOverlayRef.current,
-            start: "top 70%",
-            toggleActions: "play none none none",
-          },
-        });
-      }
+        }
+      );
     }, sectionRef);
 
     return () => {
@@ -86,7 +77,7 @@ const StudioSection: React.FC<StudioSectionProps> = ({
   }, []);
 
   return (
-    <section className="studio-section" ref={sectionRef}>
+    <section className="section-feature" ref={sectionRef}>
       <div className="studio-container">
         <div className="studio-layout">
           {/* Left side: Image 1 - half width, full height */}
@@ -94,13 +85,9 @@ const StudioSection: React.FC<StudioSectionProps> = ({
             <img
               src={images[0].desktop || images[0].src}
               alt={images[0].alt}
-              className="studio-image"
+              className="studio-image reveal-img"
               loading="lazy"
             />
-            <div
-              ref={leftImageOverlayRef}
-              className="studio-image-overlay"
-            ></div>
           </div>
 
           {/* Right side: Content and Image 2 */}
@@ -129,13 +116,9 @@ const StudioSection: React.FC<StudioSectionProps> = ({
               <img
                 src={images[1].desktop || images[1].src}
                 alt={images[1].alt}
-                className="studio-image"
+                className="studio-image reveal-img"
                 loading="lazy"
               />
-              <div
-                ref={rightImageOverlayRef}
-                className="studio-image-overlay"
-              ></div>
             </div>
           </div>
         </div>
