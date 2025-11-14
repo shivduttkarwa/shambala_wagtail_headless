@@ -226,7 +226,7 @@ const EssenceSection: React.FC<EssenceSectionProps> = ({
           {/* Right side: Large image */}
           <div className="essence-image">
             <img
-              src={image.desktop || image.src}
+              src={image.src}
               srcSet={
                 image.mobile && image.tablet && image.desktop
                   ? `${image.mobile} 700w, ${image.tablet} 1000w, ${image.desktop} 1200w`
@@ -239,7 +239,6 @@ const EssenceSection: React.FC<EssenceSectionProps> = ({
               }
               alt={image.alt}
               className="essence-img"
-              loading="lazy"
             />
             {/* Image reveal overlay */}
             <div className="essence-image-overlay" ref={imageOverlayRef}></div>
