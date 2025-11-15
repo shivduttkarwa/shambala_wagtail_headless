@@ -4,19 +4,19 @@ import "./PortfolioShowcase.css";
 const projects = [
   {
     title: "Modern Zen Retreat",
-    bg: "/shambala_homes/images/project1.jpg",
+    bg: "/shambala_homes/images/l11.jpg",
     thumb: "/shambala_homes/images/2.jpg",
     tags: ["3 Bed", "2 Bath", "1,800 Sqft", "Garden View"],
   },
   {
     title: "Luxury Villa Estate",
-    bg: "/shambala_homes/images/project2.jpg",
+    bg: "/shambala_homes/images/l3.jpg",
     thumb: "/shambala_homes/images/11.jpg",
     tags: ["4 Bed", "3.5 Bath", "2,500 Sqft", "Pool", "Premium"],
   },
   {
     title: "Cozy Family Home",
-    bg: "/shambala_homes/images/project3.jpg",
+    bg: "/shambala_homes/images/l10.jpg",
     thumb: "/shambala_homes/images/3.jpg",
     tags: ["2 Bed", "2 Bath", "1,200 Sqft", "Family Friendly", "Affordable"],
   },
@@ -37,25 +37,52 @@ const PortfolioShowcase: React.FC = () => {
       ".project > figure > img[data-speed]"
     );
 
+    // Performance optimization variables
+    let ticking = false;
+    let lastScrollY = 0;
+    const isMobile = window.innerWidth < 940;
+
     function handleParallax() {
       if (!parallaxImages.length) return;
 
-      const viewportHeight = window.innerHeight;
+      const currentScrollY = window.scrollY;
+      
+      // Skip if scroll change is minimal (reduces calculations)
+      if (Math.abs(currentScrollY - lastScrollY) < 2) return;
+      lastScrollY = currentScrollY;
 
-      parallaxImages.forEach((img) => {
-        const rect = img.getBoundingClientRect();
-        const imgCenter = rect.top + rect.height / 2;
-        const distanceFromCenter = imgCenter - viewportHeight / 2;
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const viewportHeight = window.innerHeight;
 
-        const speed = parseFloat(img.dataset.speed || "0.8");
+          parallaxImages.forEach((img) => {
+            const rect = img.getBoundingClientRect();
+            const imgCenter = rect.top + rect.height / 2;
+            const distanceFromCenter = imgCenter - viewportHeight / 2;
 
-        const translateY = (-distanceFromCenter / viewportHeight) * 100 * speed;
+            const baseSpeed = parseFloat(img.dataset.speed || "0.8");
+            // Reduce intensity on mobile but keep parallax effect
+            const speed = isMobile ? baseSpeed * 0.4 : baseSpeed;
 
-        img.style.transform = `translate3d(0, ${translateY}%, 0) scale(1.2)`;
-      });
+            let translateY = (-distanceFromCenter / viewportHeight) * 100 * speed;
+            
+            // Constrain movement to prevent image clipping issues
+            const maxMove = isMobile ? 20 : 30;
+            translateY = Math.max(-maxMove, Math.min(maxMove, translateY));
+
+            // Use hardware acceleration
+            img.style.willChange = 'transform';
+            img.style.transform = `translate3d(0, ${translateY}%, 0) scale(1.2)`;
+          });
+
+          ticking = false;
+        });
+        ticking = true;
+      }
     }
 
-    window.addEventListener("scroll", handleParallax);
+    // Use passive listeners for better scroll performance
+    window.addEventListener("scroll", handleParallax, { passive: true });
     window.addEventListener("load", handleParallax);
     window.addEventListener("resize", handleParallax);
 
@@ -69,6 +96,11 @@ const PortfolioShowcase: React.FC = () => {
       window.removeEventListener("scroll", handleParallax);
       window.removeEventListener("load", handleParallax);
       window.removeEventListener("resize", handleParallax);
+      
+      // Clean up will-change
+      parallaxImages.forEach((img) => {
+        img.style.willChange = 'auto';
+      });
     };
   }, []);
 
