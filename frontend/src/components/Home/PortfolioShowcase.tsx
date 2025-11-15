@@ -60,20 +60,13 @@ const PortfolioShowcase: React.FC = () => {
             const imgCenter = rect.top + rect.height / 2;
             const distanceFromCenter = imgCenter - viewportHeight / 2;
 
-            const baseSpeed = parseFloat(img.dataset.speed || "0.8");
-            // Reduce intensity on mobile but keep parallax effect
-            const speed = isMobile ? baseSpeed * 0.4 : baseSpeed;
+            const speed = parseFloat(img.dataset.speed || "0.25");
 
-            let translateY =
-              (-distanceFromCenter / viewportHeight) * 100 * speed;
-
-            // Constrain movement to prevent image clipping issues
-            const maxMove = isMobile ? 20 : 30;
-            translateY = Math.max(-maxMove, Math.min(maxMove, translateY));
+            // Convert distance to a translate percentage for smoother feeling
+            const translateY = (-distanceFromCenter / viewportHeight) * 100 * speed;
 
             // Use hardware acceleration
-            img.style.willChange = "transform";
-            img.style.transform = `translate3d(0, ${translateY}%, 0) scale(1.2)`;
+            img.style.transform = `translate3d(0, ${translateY}%, 0) scale(1.05)`;
           });
 
           ticking = false;
@@ -98,10 +91,6 @@ const PortfolioShowcase: React.FC = () => {
       window.removeEventListener("load", handleParallax);
       window.removeEventListener("resize", handleParallax);
 
-      // Clean up will-change
-      parallaxImages.forEach((img) => {
-        img.style.willChange = "auto";
-      });
     };
   }, []);
 
@@ -120,7 +109,7 @@ const PortfolioShowcase: React.FC = () => {
               <img
                 src={project.bg}
                 alt={`${project.title} Background`}
-                data-speed="0.8"
+                data-speed="0.25"
               />
             </figure>
             <div className="content">

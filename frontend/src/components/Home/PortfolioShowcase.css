@@ -81,7 +81,7 @@ section.project-feature .projects-wrapper .project > figure > img {
 
   /* extra scale so parallax can move more without showing edges */
   will-change: transform;
-  transform: translate3d(0, 0, 0) scale(1.2);
+  transform: translate3d(0, 0, 0) scale(1.05);
 }
 
 section.project-feature .projects-wrapper .project .content {
