@@ -1,6 +1,3 @@
-/* Import Cinzel Font */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&display=swap');
-
 /* Staggered Menu Styles */
 .staggered-menu-wrapper {
   position: relative;
@@ -15,14 +12,14 @@
   z-index: 1000;
 }
 
-.staggered-menu-wrapper[data-position='left'] .sm-prelayers,
-.staggered-menu-wrapper[data-position='left'] .staggered-menu-panel {
+.staggered-menu-wrapper[data-position="left"] .sm-prelayers,
+.staggered-menu-wrapper[data-position="left"] .staggered-menu-panel {
   left: 0;
   right: auto;
 }
 
-.staggered-menu-wrapper[data-position='right'] .sm-prelayers,
-.staggered-menu-wrapper[data-position='right'] .staggered-menu-panel {
+.staggered-menu-wrapper[data-position="right"] .sm-prelayers,
+.staggered-menu-wrapper[data-position="right"] .staggered-menu-panel {
   right: 0;
   left: auto;
 }
@@ -60,7 +57,7 @@
 }
 
 .sm-logo-text {
-  font-family: 'Cinzel', serif;
+  font-family: "Dream Avenue", cursive;
   font-size: 1rem;
   font-weight: 500;
   color: #fff;
@@ -83,7 +80,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-family: 'Cinzel', serif;
+  font-family: "Cinzel", serif;
   font-size: 1rem;
   font-weight: 500;
   padding: 0.5rem;
@@ -147,9 +144,6 @@
   color: #fff;
 }
 
-
-
-
 .sm-panel-inner {
   padding: 6rem 3rem 10rem;
   position: relative;
@@ -180,7 +174,7 @@
 }
 
 .sm-panel-list[data-numbering] a.sm-panel-item::after {
-  content: '0' attr(data-index);
+  content: "0" attr(data-index);
   position: relative;
   margin-left: 2rem;
   font-size: 1.2rem;
@@ -201,12 +195,12 @@
   transition: color 0.3s ease;
   text-transform: uppercase;
   letter-spacing: -0.02em;
-  font-family: 'Cinzel', serif;
+  font-family: "Dream Avenue", cursive;
   line-height: 1.2;
 }
 
 .sm-panel-item:hover {
-  color: var(--sm-accent, #5B7C4F);
+  color: var(--sm-accent, #5b7c4f);
 }
 
 .sm-panel-itemLabel {
@@ -223,7 +217,7 @@
 }
 
 .sm-panel-list[data-numbering] .sm-panel-item-with-submenu::after {
-  content: '';
+  content: "";
   display: none;
 }
 
@@ -232,7 +226,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  font-family: 'Cinzel', serif;
+  font-family: "Dream Avenue", cursive;
   display: inline-flex;
   align-items: center;
   gap: 1rem;
@@ -250,11 +244,11 @@
 }
 
 .sm-panel-item-button:hover {
-  color: var(--sm-accent, #5B7C4F);
+  color: var(--sm-accent, #5b7c4f);
 }
 
 .sm-panel-item-button:hover .sm-submenu-arrow {
-  color: var(--sm-accent, #5B7C4F);
+  color: var(--sm-accent, #5b7c4f);
 }
 
 .sm-submenu-arrow {
@@ -290,7 +284,6 @@
   z-index: 10;
 }
 
-
 .sm-submenu-item {
   margin: 0;
 }
@@ -307,12 +300,12 @@
 }
 
 .sm-submenu-link::before {
-  content: '';
+  content: "";
   display: none;
 }
 
 .sm-submenu-link:hover {
-  color: var(--sm-accent, #5B7C4F);
+  color: var(--sm-accent, #5b7c4f);
   padding-left: 0;
 }
 
@@ -354,7 +347,7 @@
 }
 
 .sm-socials-link:hover {
-  color: var(--sm-accent, #5227FF);
+  color: var(--sm-accent, #5227ff);
 }
 
 /* Mobile Responsive */

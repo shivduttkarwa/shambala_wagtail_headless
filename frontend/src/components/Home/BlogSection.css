@@ -19,12 +19,13 @@
 }
 
 .blog-section-title {
-  font-family: "Cinzel", serif;
-  font-size: clamp(2rem, 3.2vw, 2.8rem);
+  font-family: "Dream Avenue", cursive;
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
   font-weight: 400;
   color: var(--text);
   line-height: 1.2;
   letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 /* Layout - 50/50 Split */
@@ -108,7 +109,7 @@
 
 /* Title */
 .blog-title {
-  font-family: "Cinzel", serif;
+  font-family: "Dream Avenue", cursive;
   font-size: 1.4rem;
   font-weight: 400;
   color: var(--text);
@@ -326,7 +327,7 @@
 }
 
 .blog-title-line::before {
-  content: '';
+  content: "";
   position: absolute;
   left: calc(-50vw + 50% - 40px);
   width: calc(100vw + 80px);
@@ -334,7 +335,6 @@
   background: var(--accent);
   top: 0;
 }
-
 
 .blog-parallax {
   position: relative;
@@ -350,13 +350,14 @@
   display: flex;
   white-space: nowrap;
   text-align: center;
-  font-family: "Cinzel", serif;
-  font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+  font-family: "Dream Avenue", cursive;
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
   font-weight: 400;
   letter-spacing: 0.02em;
   color: var(--text);
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
   line-height: 1.2;
+  text-transform: uppercase;
 }
 
 .blog-scroller span.blog-scroll-title {
@@ -369,15 +370,15 @@
     gap: 20px;
     padding: 30px 0;
   }
-  
+
   .blog-title-line {
     width: 100vw;
   }
-  
+
   .blog-scroller {
-    font-size: clamp(1.2rem, 4vw, 1.76rem);
+    font-size: clamp(2rem, 6vw, 2.5rem);
   }
-  
+
   .blog-parallax {
     min-height: 50px;
   }

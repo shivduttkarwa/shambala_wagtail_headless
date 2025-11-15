@@ -78,6 +78,12 @@
 /* Title styles moved to App.css for consistency */
 .studio-title {
   margin-bottom: 25px;
+  font-family: "Dream Avenue", cursive;
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  font-weight: 400;
+  color: var(--text);
+  line-height: 1.2;
+  text-transform: uppercase;
 }
 
 .studio-subtitle {
@@ -169,8 +175,6 @@
   .right-image {
     height: 250px;
   }
-
-
 }
 
 @media (max-width: 640px) {

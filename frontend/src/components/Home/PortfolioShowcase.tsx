@@ -4,19 +4,19 @@ import "./PortfolioShowcase.css";
 const projects = [
   {
     title: "Modern Zen Retreat",
-    bg: "/shambala_homes/images/l11.jpg",
+    bg: "/shambala_homes/images/l4.jpg",
     thumb: "/shambala_homes/images/2.jpg",
     tags: ["3 Bed", "2 Bath", "1,800 Sqft", "Garden View"],
   },
   {
     title: "Luxury Villa Estate",
-    bg: "/shambala_homes/images/l3.jpg",
+    bg: "/shambala_homes/images/l5.jpg",
     thumb: "/shambala_homes/images/11.jpg",
     tags: ["4 Bed", "3.5 Bath", "2,500 Sqft", "Pool", "Premium"],
   },
   {
     title: "Cozy Family Home",
-    bg: "/shambala_homes/images/l10.jpg",
+    bg: "/shambala_homes/images/l6.jpg",
     thumb: "/shambala_homes/images/3.jpg",
     tags: ["2 Bed", "2 Bath", "1,200 Sqft", "Family Friendly", "Affordable"],
   },

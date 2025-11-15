@@ -48,13 +48,13 @@
 .vision-large-text {
   font-size: clamp(6rem, 12vw, 12rem);
   font-weight: 300;
-  font-family: cynzel, serif;
+  font-family: "Dream Avenue", cursive;
   color: #2e2e2e;
   margin: 0;
   line-height: 0.8;
   opacity: 0.8;
   text-transform: uppercase;
-  letter-spacing: -0.02em;
+  letter-spacing: normal;
 }
 
 .vision-image-container {

@@ -21,7 +21,7 @@ const OurVisionSection: React.FC<OurVisionSectionProps> = ({
   leftText = "OUR",
   rightText = "VISION",
   centerImage = {
-    src: `${publicUrl}images/3.jpg`,
+    src: `${publicUrl}images/project2.jpg`,
     alt: "Modern architecture and design",
     overlayText: "Our approach",
   },
@@ -39,7 +39,7 @@ const OurVisionSection: React.FC<OurVisionSectionProps> = ({
           scrollTrigger: {
             trigger: sectionRef.current,
             start: "top top",
-            end: "+=100%", 
+            end: "+=100%",
             scrub: true,
             pin: true,
             pinSpacing: false, // This prevents artificial spacing that causes lag

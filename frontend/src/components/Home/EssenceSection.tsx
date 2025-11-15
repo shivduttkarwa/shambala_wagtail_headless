@@ -28,7 +28,7 @@ const EssenceSection: React.FC<EssenceSectionProps> = ({
   logo,
   tagline = "WHY SHAMBALA HOMES?",
   heading = "WE SHAPE THE ESSENCE OF LIVING",
-  description = "We envision spaces that are not just lived in, but felt — where every element has been curated to inspire connection, serenity, and a profound sense of belonging. Each project reflects a deep understanding of our clients' evolving lifestyles, blending timeless aesthetics with intelligent innovation and sustainable craftsmanship.",
+  description = "We envision spaces that are not just lived in, but felt — where every element has been curated to inspire connection, serenity, and belonging.",
   ctaText = "VIEW OUR DESIGNS",
   ctaHref = "#house-designs",
   image = {
@@ -208,9 +208,6 @@ const EssenceSection: React.FC<EssenceSectionProps> = ({
               </div>
             )}
 
-            <div className="essence-tagline" ref={taglineRef}>
-              {splitTextIntoChars(tagline)}
-            </div>
 
             <h2 className="essence-heading" ref={headingRef}>
               {splitTextIntoLines(heading)}

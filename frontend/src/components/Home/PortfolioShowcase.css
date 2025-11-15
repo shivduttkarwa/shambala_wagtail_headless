@@ -53,9 +53,10 @@ section.project-feature .block-text {
 
 section.project-feature .block-text h3 {
   color: #1a1810;
-  font-size: clamp(2.5rem, 4vw, 3.5rem);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
   font-weight: 500;
-  font-family: cinzel, sans-serif;
+  font-family: "Dream Avenue", cursive;
+  text-transform: uppercase;
 }
 
 section.project-feature .projects-wrapper .project {
