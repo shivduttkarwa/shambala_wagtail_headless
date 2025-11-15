@@ -22,6 +22,14 @@ const projects = [
   },
 ];
 
+// Image preloading function
+const preloadImages = (imageSrcs: string[]) => {
+  imageSrcs.forEach((src) => {
+    const img = new Image();
+    img.src = src;
+  });
+};
+
 const PortfolioShowcase: React.FC = () => {
   const sectionRef = useRef<HTMLElement | null>(null);
 
@@ -29,37 +37,59 @@ const PortfolioShowcase: React.FC = () => {
     const featureSection = sectionRef.current;
     if (!featureSection) return;
 
+    // Preload all images immediately
+    const allImageSrcs = projects.flatMap(project => [project.bg, project.thumb]);
+    preloadImages(allImageSrcs);
+
     // Add class to body to allow overflow for sticky behavior
     document.body.classList.add("portfolio-active");
+
+    // Check if device is mobile
+    const isMobile = () => window.innerWidth < 940; // 58.75rem = 940px
 
     // PARALLAX – fully scoped to .project-feature
     const parallaxImages = featureSection.querySelectorAll<HTMLImageElement>(
       ".project > figure > img[data-speed]"
     );
 
+<<<<<<< HEAD
     // Performance optimization variables
     let ticking = false;
     let lastScrollY = 0;
     const isMobile = window.innerWidth < 940;
+=======
+    let ticking = false;
+    let lastScrollY = window.scrollY;
+>>>>>>> 0fe19f0a7dbbac1b1b79d5f99e71dfe0a2e205ee
 
     function handleParallax() {
       if (!parallaxImages.length) return;
 
       const currentScrollY = window.scrollY;
       
+<<<<<<< HEAD
       // Skip if scroll change is minimal (reduces calculations)
       if (Math.abs(currentScrollY - lastScrollY) < 2) return;
+=======
+      // Skip if scroll hasn't changed (prevents unnecessary calculations)
+      if (Math.abs(currentScrollY - lastScrollY) < 1) return;
+>>>>>>> 0fe19f0a7dbbac1b1b79d5f99e71dfe0a2e205ee
       lastScrollY = currentScrollY;
 
       if (!ticking) {
         requestAnimationFrame(() => {
           const viewportHeight = window.innerHeight;
+<<<<<<< HEAD
+=======
+          const mobile = isMobile();
+>>>>>>> 0fe19f0a7dbbac1b1b79d5f99e71dfe0a2e205ee
 
           parallaxImages.forEach((img) => {
             const rect = img.getBoundingClientRect();
             const imgCenter = rect.top + rect.height / 2;
             const distanceFromCenter = imgCenter - viewportHeight / 2;
 
+<<<<<<< HEAD
             const baseSpeed = parseFloat(img.dataset.speed || "0.8");
             // Reduce intensity on mobile but keep parallax effect
             const speed = isMobile ? baseSpeed * 0.4 : baseSpeed;
@@ -71,18 +101,48 @@ const PortfolioShowcase: React.FC = () => {
             translateY = Math.max(-maxMove, Math.min(maxMove, translateY));
 
             // Use hardware acceleration
+=======
+            // Reduce parallax intensity on mobile to prevent flickering
+            const baseSpeed = parseFloat(img.dataset.speed || "0.8");
+            const speed = mobile ? baseSpeed * 0.3 : baseSpeed;
+
+            // Calculate parallax with bounds to prevent image disappearing
+            let translateY = (-distanceFromCenter / viewportHeight) * 100 * speed;
+            
+            // Clamp translateY to prevent images from moving too far out of bounds
+            // Reduced range to keep images visible
+            const maxTransform = mobile ? 15 : 25; // Smaller range for mobile
+            translateY = Math.max(-maxTransform, Math.min(maxTransform, translateY));
+
+            // Use transform3d with will-change for better performance
+>>>>>>> 0fe19f0a7dbbac1b1b79d5f99e71dfe0a2e205ee
             img.style.willChange = 'transform';
             img.style.transform = `translate3d(0, ${translateY}%, 0) scale(1.2)`;
           });
 
           ticking = false;
         });
+<<<<<<< HEAD
+=======
+
+>>>>>>> 0fe19f0a7dbbac1b1b79d5f99e71dfe0a2e205ee
         ticking = true;
       }
     }
 
+<<<<<<< HEAD
     // Use passive listeners for better scroll performance
     window.addEventListener("scroll", handleParallax, { passive: true });
+=======
+    // Throttle scroll events more aggressively on mobile
+    let scrollTimeout: NodeJS.Timeout;
+    function throttledScroll() {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(handleParallax, isMobile() ? 16 : 8); // 60fps on mobile, 120fps on desktop
+    }
+
+    window.addEventListener("scroll", throttledScroll, { passive: true });
+>>>>>>> 0fe19f0a7dbbac1b1b79d5f99e71dfe0a2e205ee
     window.addEventListener("load", handleParallax);
     window.addEventListener("resize", handleParallax);
 
@@ -92,8 +152,9 @@ const PortfolioShowcase: React.FC = () => {
     return () => {
       // Remove class from body
       document.body.classList.remove("portfolio-active");
+      clearTimeout(scrollTimeout);
 
-      window.removeEventListener("scroll", handleParallax);
+      window.removeEventListener("scroll", throttledScroll);
       window.removeEventListener("load", handleParallax);
       window.removeEventListener("resize", handleParallax);
       
