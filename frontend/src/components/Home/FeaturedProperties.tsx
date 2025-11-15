@@ -96,16 +96,24 @@ const FeaturedProperties: React.FC<FeaturedPropertiesProps> = ({
                   {property.category && <p>{property.category}</p>}
                   <h2>{property.title}</h2>
                   <div className="left-navigation">
-                    <div className="swiper-button-prev">
-                      <svg width="30" height="12" viewBox="0 0 30 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M30 6H1M1 6L6 1M1 6L6 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </div>
-                    <div className="swiper-button-next">
-                      <svg width="30" height="12" viewBox="0 0 30 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M1 6H29M29 6L24 1M29 6L24 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </div>
+                    <button className="nav-btn swiper-button-prev">
+                      <div className="btn-outline btn-outline-1"></div>
+                      <div className="btn-outline btn-outline-2"></div>
+                      <div className="arrow-container">
+                        <svg width="30" height="12" viewBox="0 0 30 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M30 6H1M1 6L6 1M1 6L6 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
+                    </button>
+                    <button className="nav-btn swiper-button-next">
+                      <div className="btn-outline btn-outline-1"></div>
+                      <div className="btn-outline btn-outline-2"></div>
+                      <div className="arrow-container">
+                        <svg width="30" height="12" viewBox="0 0 30 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M1 6H29M29 6L24 1M29 6L24 11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
+                    </button>
                   </div>
                   <div className="image">
                     <img

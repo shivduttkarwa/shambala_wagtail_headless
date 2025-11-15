@@ -77,58 +77,89 @@
   --_btn-size: 100px;
 }
 
-.left-navigation .swiper-button-prev,
-.left-navigation .swiper-button-next {
+/* Blobby navigation buttons */
+.left-navigation .nav-btn {
   position: relative;
   width: var(--_btn-size);
   height: var(--_btn-size);
-  margin: 0;
-  color: #1a1a1a;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  background: transparent;
-  border: none;
-  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  background: transparent;
+  border: none;
+  outline: none;
+  transition: transform 0.2s ease;
+  margin: 0;
+  padding: 0;
 }
 
-.left-navigation .swiper-button-prev::before,
-.left-navigation .swiper-button-next::before {
-  content: "";
+/* Blobby outlines */
+.btn-outline {
   position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
-  border: 2px solid transparent;
-  border-radius: 50%;
-  border-top: 2px solid #1a1a1a;
-  border-right: 2px solid #1a1a1a;
-  border-bottom: 2px solid #1a1a1a;
-  border-left: 2px solid #1a1a1a;
-  border-top-color: transparent;
-  border-bottom-color: transparent;
-  transform: rotate(0deg);
+  border: 1px solid #1a1810;
+  pointer-events: none;
+  transition: transform 0.3s ease;
 }
 
-.left-navigation .swiper-button-prev::after,
-.left-navigation .swiper-button-next::after {
-  content: none;
+.btn-outline-1 {
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  animation: nav-morph 4s linear infinite;
 }
 
-.left-navigation .swiper-button-prev:hover,
-.left-navigation .swiper-button-next:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: scale(1.05);
+.btn-outline-2 {
+  border-radius: 53% 47% 43% 58% / 51% 39% 61% 49%;
 }
 
-.left-navigation .swiper-button-prev svg,
-.left-navigation .swiper-button-next svg {
+@keyframes nav-morph {
+  0% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+  50% {
+    border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+  }
+  100% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  }
+}
+
+/* Arrow container */
+.arrow-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.arrow-container svg {
   width: 24px;
   height: 24px;
-  stroke: #ffffff;
+  stroke: #1a1810;
+  transition: transform 0.3s ease;
+}
+
+/* Hover states */
+.left-navigation .nav-btn:hover .btn-outline {
+  transform: scale(0.94);
+}
+
+.left-navigation .nav-btn:hover.swiper-button-next .arrow-container svg {
+  transform: translateX(3px);
+}
+
+.left-navigation .nav-btn:hover.swiper-button-prev .arrow-container svg {
+  transform: translateX(-3px);
+}
+
+.left-navigation .nav-btn:active {
+  transform: scale(0.95);
 }
 
 /* Responsive button sizes */
@@ -155,8 +186,7 @@
     --_btn-size: 40px;
   }
 
-  .left-navigation .swiper-button-prev svg,
-  .left-navigation .swiper-button-next svg {
+  .arrow-container svg {
     width: 20px;
     height: 20px;
   }
@@ -167,8 +197,7 @@
     --_btn-size: 35px;
   }
 
-  .left-navigation .swiper-button-prev svg,
-  .left-navigation .swiper-button-next svg {
+  .arrow-container svg {
     width: 18px;
     height: 18px;
   }
